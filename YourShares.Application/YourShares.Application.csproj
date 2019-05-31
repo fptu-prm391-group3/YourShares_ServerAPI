@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\YourShares.Data\YourShares.Data.csproj" />
+      <ProjectReference Include="..\YourShares.Domain\YourShares.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="ViewModels" />
+    </ItemGroup>
+
+</Project>
