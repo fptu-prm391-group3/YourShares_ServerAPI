@@ -11,10 +11,10 @@ namespace YourShares.Application.Services
         private readonly IRepository<Company> _companyRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CompanyService(IUnitOfWork UnitOfWork, IRepository<Company> CompanyRepository)
+        public CompanyService(IUnitOfWork unitOfWork, IRepository<Company> companyRepository)
         {
-            _unitOfWork = UnitOfWork;
-            _companyRepository = CompanyRepository;
+            _unitOfWork = unitOfWork;
+            _companyRepository = companyRepository;
         }
 
         public async Task<string> GetDetail()

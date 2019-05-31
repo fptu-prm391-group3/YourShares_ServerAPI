@@ -6,7 +6,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\YourShares.Data\YourShares.Data.csproj" />
-      <ProjectReference Include="..\YourShares.Domain\YourShares.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>

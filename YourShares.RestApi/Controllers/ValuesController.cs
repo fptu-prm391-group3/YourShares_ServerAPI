@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace YourShares.RestApi.Controllers
 {
-    [Authorize]
+    // if need to authorize, use this
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
