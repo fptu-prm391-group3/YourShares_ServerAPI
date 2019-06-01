@@ -5,12 +5,12 @@ namespace YourShares.Data.UoW
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public UnitOfWork(Context context)
+        public UnitOfWork(YourSharesContext context)
         {
             Context = context;
         }
 
-        public Context Context { get; }
+        public YourSharesContext Context { get; }
 
         public void Commit()
         {

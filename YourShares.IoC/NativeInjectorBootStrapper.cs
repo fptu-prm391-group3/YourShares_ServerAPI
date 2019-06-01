@@ -25,13 +25,19 @@ namespace YourShares.IoC
             services.AddSingleton<IAuthorizationHandler, ClaimsRequirementHandler>();
 
             // Application
-            services.AddTransient<ICompanyService, CompanyService>();
+//            services.AddTransient<ICompanyService, CompanyService>();
+            services.AddScoped<IRepository<Company>, Repository<Company>>();
+            services.AddScoped<IRepository<Administrator>, Repository<Administrator>>();
+            services.AddScoped<IRepository<ShareAccounting>, Repository<ShareAccounting>>();
+            services.AddScoped<IRepository<Shareholder>, Repository<Shareholder>>();
+            services.AddScoped<IRepository<Transaction>, Repository<Transaction>>();
+
 
             services.AddTransient<IRepository<Company>, Repository<Company>>();
 
             // Infra - Data
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<Context>();
+            services.AddScoped<YourSharesContext>();
 
             // Infra - Identity Services
             services.AddTransient<IEmailSender, AuthEmailMessageSender>();

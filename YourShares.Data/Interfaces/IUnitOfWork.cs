@@ -5,7 +5,7 @@ namespace YourShares.Data.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        Context Context { get; }
+        YourSharesContext Context { get; }
         void Commit();
         Task CommitAsyn();
     }

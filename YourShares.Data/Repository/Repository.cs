@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using YourShares.Data.Interfaces;
 
 namespace YourShares.Data.Repository
@@ -15,37 +15,79 @@ namespace YourShares.Data.Repository
         {
             _unitOfWork = unitOfWork;
         }
-
-        public void Add(T entity)
+        
+        public EntityEntry<T> Insert(T entity)
         {
-            _unitOfWork.Context.Set<T>().Add(entity);
+            return _unitOfWork.Context.Set<T>().Add(entity);
+        }
+        
+        public void InsertMany(IEnumerable<T> entities)
+        {
+            _unitOfWork.Context.Set<T>().AddRange(entities);
         }
 
         public void Delete(T entity)
         {
-            var existing = _unitOfWork.Context.Set<T>().Find(entity);
+            T existing = _unitOfWork.Context.Set<T>().Find(entity);
             if (existing != null) _unitOfWork.Context.Set<T>().Remove(existing);
         }
-
-        public IEnumerable<T> Get()
+        
+        public void DeleteRange(IEnumerable<T> entities)
         {
-            return _unitOfWork.Context.Set<T>().AsEnumerable();
+            IEnumerable<T> existing = new List<T>();
+
+            foreach (var item in entities)
+            {
+                T A = _unitOfWork.Context.Set<T>().Find(item);
+                existing.ToList().Add(A);
+            }
+            if (existing != null) _unitOfWork.Context.Set<T>().RemoveRange(existing);
         }
 
-        public IEnumerable<T> Get(Expression<Func<T, bool>> predicate)
+        public T GetById(Guid id)
         {
-            return _unitOfWork.Context.Set<T>().Where(predicate).AsEnumerable();
+            return _unitOfWork.Context.Set<T>().Find(id);
         }
 
-        public void Update(T entity)
+        public T GetByManyId(IEnumerable<Guid> ids)
         {
-            _unitOfWork.Context.Entry(entity).State = EntityState.Modified;
-            _unitOfWork.Context.Set<T>().Attach(entity);
+            return _unitOfWork.Context.Set<T>().Find(ids);
         }
+
 
         public IQueryable<T> GetAll()
         {
             return _unitOfWork.Context.Set<T>().AsQueryable();
+        }
+        
+        public IQueryable<T> GetAllAsNoTracking()
+        {
+            return _unitOfWork.Context.Set<T>().AsQueryable<T>().AsNoTracking();
+        }
+        
+        public IQueryable<T> GetMany(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
+        {
+            return _unitOfWork.Context.Set<T>().Where(predicate).AsQueryable<T>();
+        }
+        
+        public IQueryable<T> GetManyAsNoTracking(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
+        {
+            return _unitOfWork.Context.Set<T>().Where(predicate).AsQueryable<T>();
+        }
+        
+        public EntityEntry<T> Update(T entity)
+        {
+            _unitOfWork.Context.Entry(entity).State = EntityState.Modified;
+            return _unitOfWork.Context.Set<T>().Attach(entity);
+        }
+        
+        public void UpdateRange(IEnumerable<T> entities)
+        {
+            foreach (var item in entities)
+            {
+                _unitOfWork.Context.Entry(item).State = EntityState.Modified;
+            }
+            _unitOfWork.Context.Set<T>().AttachRange(entities);
         }
     }
 }

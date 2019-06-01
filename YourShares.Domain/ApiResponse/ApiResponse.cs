@@ -6,18 +6,31 @@ namespace YourShares.Domain.ApiResponse
     {
         public static string Ok(object Object, long? count)
         {
-            var response = new Response();
-            response.Data = Object;
-            response.Count = count == null ? 0 : count;
-            response.IsSuccess = true;
+            var response = new Response 
+            {
+                Data = Object, 
+                Count = count ?? 0, 
+                IsSuccess = true
+                
+            };
+            return JsonConvert.SerializeObject(response, Formatting.Indented);
+        }
+        
+        public static string Ok()
+        {
+            var response = new Response {IsSuccess = true};
             return JsonConvert.SerializeObject(response, Formatting.Indented);
         }
 
-        public static string Error()
+        public static string Error(int errorCode, string errorMessage)
         {
-            var response = new Response();
-            response.Count = 0;
-            response.IsSuccess = false;
+            var response = new Response
+            {
+                Count = 0, 
+                IsSuccess = false,
+                ErrorCode = errorCode,
+                ErrorMessage = errorMessage
+            };
             return JsonConvert.SerializeObject(response, Formatting.Indented);
         }
     }
