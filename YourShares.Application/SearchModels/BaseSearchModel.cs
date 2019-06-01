@@ -1,4 +1,4 @@
-namespace YourShares.Application.ViewModels
+namespace YourShares.Application.SearchModels
 {
     public class BaseSearchModel
     {
@@ -8,6 +8,6 @@ namespace YourShares.Application.ViewModels
 
         public int PageSize { get; set; } = 10;
 
-        public string SortField { get; set; }    
+        public string SortField { get; set; }
     }
 }

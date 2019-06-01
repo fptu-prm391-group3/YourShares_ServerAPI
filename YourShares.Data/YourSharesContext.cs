@@ -40,7 +40,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.Capital).HasMaxLength(255);
 
-                entity.Property(e => e.CompanyName).HasMaxLength(255);
+                entity.Property(e => e.Name).HasMaxLength(255);
             });
 
             modelBuilder.Entity<ShareAccounting>(entity =>

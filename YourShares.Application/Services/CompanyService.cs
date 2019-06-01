@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using YourShares.Application.Interfaces;
@@ -32,10 +33,11 @@ namespace YourShares.Application.Services
         {
             var company = new Company
             {
-                CompanyName = model.CompanyName,
+                Name = model.CompanyName,
                 Address = model.Address,
+                Phone = model.Phone,
                 Capital = model.Capital,
-                TotalShares = model.TotalShares,
+                TotalShare = model.TotalShares,
                 OptionPoll = model.OptionPoll
             };
             _companyRepository.Insert(company);
@@ -52,16 +54,17 @@ namespace YourShares.Application.Services
 
         public async Task<string> UpdateCompany(CompanyUpdateModel model)
         {
-            var company = _companyRepository.GetById(model.CompanyId);
+            var company = _companyRepository.GetById(model.Id);
             if (company == null)
             {
                 return ApiResponse.Error(404, "Company Not Exits");
             }
 
-            company.CompanyName = model.CompanyName;
+            company.Name = model.CompanyName;
             company.Address = model.Address;
+            company.Phone = model.Phone;
             company.Capital = model.Capital;
-            company.TotalShares = model.TotalShares;
+            company.TotalShare = model.TotalShares;
             company.OptionPoll = model.OptionPoll;
             _companyRepository.Insert(company);
             await _unitOfWork.CommitAsync();
@@ -84,17 +87,19 @@ namespace YourShares.Application.Services
                 })
                 .Join(_companyRepository.GetManyAsNoTracking(x =>
                     (ValidateUtils.IsNullOrEmpty(model.Address) || x.Address.ToUpper().Contains(model.AdminUserName.ToUpper()))
-                    && (ValidateUtils.IsNullOrEmpty(model.Capital) || x.Capital.ToUpper().Contains(model.Capital.ToUpper()))
-                    && (ValidateUtils.IsNullOrEmpty(model.CompanyName) || x.CompanyName.ToUpper().Contains(model.CompanyName.ToUpper()))
+                    // TODO dont't understand this
+//                    && (ValidateUtils.IsNullOrEmpty(model.Capital) || x.Capital.ToUpper().Contains(model.Capital.ToUpper()))
+                    && (ValidateUtils.IsNullOrEmpty(model.CompanyName) || x.Name.ToUpper().Contains(model.CompanyName.ToUpper()))
                 ), x => x.Id, y => y.AdminId, (x, y) => new CompanyViewSearchModel
                 {
                     AdminUserName = x.UserName,
                     Address = y.Address,
+                    Phone = y.Phone,
                     Capital = y.Capital,
-                    CompanyId = y.Id,
-                    CompanyName = y.CompanyName,
+                    Id = y.Id,
+                    CompanyName = y.Name,
                     OptionPoll = y.OptionPoll,
-                    TotalShares = y.TotalShares
+                    TotalShares = y.TotalShare
                 }).OrderBy(sortField);
             var count = await query.CountAsync();
             var result = query.Skip((model.Page - 1) * model.PageSize)
