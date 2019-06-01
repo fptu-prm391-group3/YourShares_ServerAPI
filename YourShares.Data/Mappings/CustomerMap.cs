@@ -14,10 +14,10 @@ namespace YourShares.Data.Mappings
             builder.Property(c => c.Address)
                 .HasColumnType("varchar(255)")
                 .HasMaxLength(255);
-
-            builder.Property(c => c.CompanyCode)
-                .HasColumnType("varchar(255)")
-                .HasMaxLength(255);
+//
+//            builder.Property(c => c.CompanyCode)
+//                .HasColumnType("varchar(255)")
+//                .HasMaxLength(255);
         }
     }
 }

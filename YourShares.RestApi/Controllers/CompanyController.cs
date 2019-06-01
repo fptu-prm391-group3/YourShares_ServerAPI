@@ -9,6 +9,7 @@ namespace YourShares.RestApi.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
+    [Produces("application/json")]
     public class CompanyController : ControllerBase
     {
         private readonly ICompanyService _customerAppService;

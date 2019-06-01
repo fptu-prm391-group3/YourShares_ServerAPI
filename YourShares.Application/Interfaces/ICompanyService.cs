@@ -15,34 +15,34 @@ namespace YourShares.Application.Interfaces
         Task<string> SearchCompany(CompanySearchModel model);
 
         /// <summary>
-        /// Gets all company.
+        /// Get all company.
         /// </summary>
         /// <returns></returns>
         Task<string> GetAllCompany();
 
         /// <summary>
-        /// Creates the specified model.
+        /// Create the specified model.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
         Task<string> CreateCompany(CompanyCreateModel model);
 
         /// <summary>
-        /// Updates the company.
+        /// Update the company information.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
         Task<string> UpdateCompany(CompanyUpdateModel model);
 
         /// <summary>
-        /// Gets the company by identifier.
+        /// Get the company by identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
         Task<string> GetById(Guid id);
 
         /// <summary>
-        /// Deletes the by identifier.
+        /// Delete company by its identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>

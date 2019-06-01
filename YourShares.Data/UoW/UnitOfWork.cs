@@ -17,7 +17,7 @@ namespace YourShares.Data.UoW
             Context.SaveChanges();
         }
 
-        public async Task CommitAsyn()
+        public async Task CommitAsync()
         {
             await Context.SaveChangesAsync();
         }

@@ -38,8 +38,8 @@ namespace YourShares.Data.Repository
 
             foreach (var item in entities)
             {
-                T A = _unitOfWork.Context.Set<T>().Find(item);
-                existing.ToList().Add(A);
+                T a = _unitOfWork.Context.Set<T>().Find(item);
+                existing.ToList().Add(a);
             }
             if (existing != null) _unitOfWork.Context.Set<T>().RemoveRange(existing);
         }

@@ -7,6 +7,6 @@ namespace YourShares.Data.Interfaces
     {
         YourSharesContext Context { get; }
         void Commit();
-        Task CommitAsyn();
+        Task CommitAsync();
     }
 }

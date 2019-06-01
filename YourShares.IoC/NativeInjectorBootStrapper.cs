@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using YourShares.Application;
+using YourShares.Application.Interfaces;
 using YourShares.Application.Services;
 using YourShares.Data;
 using YourShares.Data.Interfaces;
@@ -14,7 +15,7 @@ using YourShares.Identity.Services;
 
 namespace YourShares.IoC
 {
-    public class NativeInjectorBootStrapper
+    public static class NativeInjectorBootStrapper
     {
         public static void RegisterServices(IServiceCollection services)
         {
@@ -25,15 +26,14 @@ namespace YourShares.IoC
             services.AddSingleton<IAuthorizationHandler, ClaimsRequirementHandler>();
 
             // Application
-//            services.AddTransient<ICompanyService, CompanyService>();
+            services.AddTransient<ICompanyService, CompanyService>();
+            
+            // Data- Repo
             services.AddScoped<IRepository<Company>, Repository<Company>>();
             services.AddScoped<IRepository<Administrator>, Repository<Administrator>>();
             services.AddScoped<IRepository<ShareAccounting>, Repository<ShareAccounting>>();
             services.AddScoped<IRepository<Shareholder>, Repository<Shareholder>>();
             services.AddScoped<IRepository<Transaction>, Repository<Transaction>>();
-
-
-            services.AddTransient<IRepository<Company>, Repository<Company>>();
 
             // Infra - Data
             services.AddScoped<IUnitOfWork, UnitOfWork>();

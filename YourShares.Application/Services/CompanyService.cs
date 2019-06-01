@@ -39,7 +39,7 @@ namespace YourShares.Application.Services
                 OptionPoll = model.OptionPoll
             };
             _companyRepository.Insert(company);
-            await _unitOfWork.CommitAsyn();
+            await _unitOfWork.CommitAsync();
             return ApiResponse.Ok();
         }
 
@@ -64,7 +64,7 @@ namespace YourShares.Application.Services
             company.TotalShares = model.TotalShares;
             company.OptionPoll = model.OptionPoll;
             _companyRepository.Insert(company);
-            await _unitOfWork.CommitAsyn();
+            await _unitOfWork.CommitAsync();
             return ApiResponse.Ok();
         }
 
@@ -118,7 +118,7 @@ namespace YourShares.Application.Services
             }
 
             _companyRepository.Delete(company);
-            await _unitOfWork.CommitAsyn();
+            await _unitOfWork.CommitAsync();
             return ApiResponse.Ok();
         }
     }
