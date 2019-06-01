@@ -5,6 +5,8 @@
         <UserSecretsId>aspnet-YourShares.RestApi-CAF420AF-83F4-447A-8C59-7E57D294AB00</UserSecretsId>
         <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
         <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

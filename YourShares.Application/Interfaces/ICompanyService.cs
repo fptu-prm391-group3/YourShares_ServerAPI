@@ -39,7 +39,7 @@ namespace YourShares.Application.Interfaces
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
-        Task<string> GetCompanyById(Guid id);
+        Task<string> GetById(Guid id);
 
         /// <summary>
         /// Deletes the by identifier.

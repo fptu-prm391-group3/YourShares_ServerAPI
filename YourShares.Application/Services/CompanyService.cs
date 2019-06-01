@@ -103,7 +103,7 @@ namespace YourShares.Application.Services
             return ApiResponse.Ok(result, count);
         }
 
-        public async Task<string> GetCompanyById(Guid id)
+        public async Task<string> GetById(Guid id)
         {
             var company = _companyRepository.GetById(id);
             return company == null ? ApiResponse.Error(404, "Company Not Exits") : ApiResponse.Ok(company, 1);
