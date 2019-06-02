@@ -41,6 +41,8 @@ namespace YourShares.Data.Repository
                 T a = _unitOfWork.Context.Set<T>().Find(item);
                 existing.ToList().Add(a);
             }
+            // TODO Bad code here, existing always not null
+            // Should change to existing.Any()
             if (existing != null) _unitOfWork.Context.Set<T>().RemoveRange(existing);
         }
 

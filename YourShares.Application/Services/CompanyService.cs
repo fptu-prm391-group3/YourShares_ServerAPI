@@ -19,6 +19,8 @@ namespace YourShares.Application.Services
         private readonly IRepository<Company> _companyRepository;
         private readonly IRepository<Administrator> _administratorRepository;
         private readonly IUnitOfWork _unitOfWork;
+        
+        // TODO Response a adjustable Http status code
 
         public CompanyService(IUnitOfWork unitOfWork
             , IRepository<Company> companyRepository
@@ -42,6 +44,7 @@ namespace YourShares.Application.Services
             };
             _companyRepository.Insert(company);
             await _unitOfWork.CommitAsync();
+            // TODO Response the created company id
             return ApiResponse.Ok();
         }
 

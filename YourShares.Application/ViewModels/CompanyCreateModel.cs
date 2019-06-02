@@ -2,6 +2,7 @@ namespace YourShares.Application.ViewModels
 {
     public class CompanyCreateModel
     {
+        // TODO adjust view model
         public string CompanyName { get; set; }
 
         public string Address { get; set; }

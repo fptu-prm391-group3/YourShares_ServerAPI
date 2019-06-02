@@ -6,11 +6,7 @@ namespace YourShares.Domain.Util
     {
         public static bool IsNullOrEmpty(string data)
         {
-            if (data == null || data == String.Empty)
-            {
-                return true;
-            }
-            return false;
+            return string.IsNullOrEmpty(data);
         }
 
         public static bool IsNullOrEmpty(Guid data)

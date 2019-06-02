@@ -4,6 +4,7 @@ namespace YourShares.Domain.ApiResponse
 {
     public static class ApiResponse
     {
+        // TODO change Response type to ApiResponse, data field to Object T
         public static string Ok(object Object, long? count)
         {
             var response = new Response 
