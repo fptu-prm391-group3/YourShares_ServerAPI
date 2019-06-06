@@ -25,12 +25,12 @@ namespace YourShares.RestApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
-                .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
+//            services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
+//                .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSwaggerGen(s =>
             {
-                s.SwaggerDoc("v1", new Info {Title = "YourShares API", Version = "v0"});
+                s.SwaggerDoc("v1", new Info {Title = "YourShares API", Version = "v1"});
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -48,8 +48,8 @@ namespace YourShares.RestApi
             else
                 app.UseHsts();
 
-            app.UseHttpsRedirection();
-            app.UseAuthentication();
+            // app.UseHttpsRedirection();
+            // app.UseAuthentication();
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(x =>

@@ -1,14 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Net;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using YourShares.Application.Interfaces;
 using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
 using YourShares.Data.Interfaces;
-using YourShares.Domain.ApiResponse;
 using YourShares.Domain.Models;
 using YourShares.Domain.Util;
 
@@ -19,8 +17,6 @@ namespace YourShares.Application.Services
         private readonly IRepository<Company> _companyRepository;
         private readonly IRepository<Administrator> _administratorRepository;
         private readonly IUnitOfWork _unitOfWork;
-        
-        // TODO Response a adjustable Http status code
 
         public CompanyService(IUnitOfWork unitOfWork
             , IRepository<Company> companyRepository
@@ -31,10 +27,11 @@ namespace YourShares.Application.Services
             _administratorRepository = administratorRepository;
         }
 
-        public async Task<string> CreateCompany(CompanyCreateModel model)
+        public async Task<CompanyViewModel> CreateCompany(CompanyCreateModel model)
         {
             var company = new Company
             {
+                AdminId = Guid.Parse(model.AdminId),
                 Name = model.CompanyName,
                 Address = model.Address,
                 Phone = model.Phone,
@@ -45,22 +42,24 @@ namespace YourShares.Application.Services
             _companyRepository.Insert(company);
             await _unitOfWork.CommitAsync();
             // TODO Response the created company id
-            return ApiResponse.Ok();
+            return new CompanyViewModel
+            {
+                AdminId = Guid.Parse(model.AdminId),
+                Name = model.CompanyName,
+                Address = model.Address,
+                Phone = model.Phone,
+                Capital = model.Capital,
+                TotalShare = model.TotalShares,
+                OptionPoll = model.OptionPoll
+            };
         }
 
-        public async Task<string> GetAllCompany()
-        {
-            var test = _companyRepository.GetAll();
-            int count = await test.CountAsync();
-            return ApiResponse.Ok(test, count);
-        }
-
-        public async Task<string> UpdateCompany(CompanyUpdateModel model)
+        public async Task<bool> UpdateCompany(CompanyUpdateModel model)
         {
             var company = _companyRepository.GetById(model.Id);
             if (company == null)
             {
-                return ApiResponse.Error(404, "Company Not Exits");
+                return false;
             }
 
             company.Name = model.CompanyName;
@@ -70,13 +69,14 @@ namespace YourShares.Application.Services
             company.TotalShare = model.TotalShares;
             company.OptionPoll = model.OptionPoll;
             _companyRepository.Insert(company);
+            // TODO Handle fail commit
             await _unitOfWork.CommitAsync();
-            return ApiResponse.Ok();
+            return true;
         }
 
-        public async Task<string> SearchCompany(CompanySearchModel model)
+        public async Task<List<CompanyViewSearchModel>> SearchCompany(CompanySearchModel model)
         {
-            string defaultSort = "CompanyName ASC";
+            const string defaultSort = "CompanyName ASC";
             string sortType = model.IsSortDesc ? "DESC" : "ASC";
             string sortField = ValidateUtils.IsNullOrEmpty(model.SortField)
                 ? defaultSort
@@ -90,8 +90,7 @@ namespace YourShares.Application.Services
                 })
                 .Join(_companyRepository.GetManyAsNoTracking(x =>
                     (ValidateUtils.IsNullOrEmpty(model.Address) || x.Address.ToUpper().Contains(model.AdminUserName.ToUpper()))
-                    // TODO dont't understand this
-//                    && (ValidateUtils.IsNullOrEmpty(model.Capital) || x.Capital.ToUpper().Contains(model.Capital.ToUpper()))
+                    && (model.Capital <= 0 || x.Capital == model.Capital)
                     && (ValidateUtils.IsNullOrEmpty(model.CompanyName) || x.Name.ToUpper().Contains(model.CompanyName.ToUpper()))
                 ), x => x.Id, y => y.AdminId, (x, y) => new CompanyViewSearchModel
                 {
@@ -104,30 +103,39 @@ namespace YourShares.Application.Services
                     OptionPoll = y.OptionPoll,
                     TotalShares = y.TotalShare
                 }).OrderBy(sortField);
-            var count = await query.CountAsync();
             var result = query.Skip((model.Page - 1) * model.PageSize)
                 .Take(model.PageSize)
                 .ToList();
-            return ApiResponse.Ok(result, count);
+            return result;
         }
 
-        public async Task<string> GetById(Guid id)
+        public async Task<CompanyViewModel> GetById(Guid id)
         {
-            var company = _companyRepository.GetById(id);
-            return company == null ? ApiResponse.Error(404, "Company Not Exits") : ApiResponse.Ok(company, 1);
+            var result = _companyRepository.GetById(id);
+            return new CompanyViewModel
+            {
+                Id = result.Id,
+                AdminId = result.AdminId,
+                Name = result.Name,
+                Phone = result.Phone,
+                Address = result.Address,
+                Capital = result.Capital,
+                OptionPoll = result.OptionPoll,
+                TotalShare = result.TotalShare
+            };
         }
 
-        public async Task<string> DeleteById(Guid id)
+        public async Task<bool> DeleteById(Guid id)
         {
             var company = _companyRepository.GetById(id);
             if (company == null)
             {
-                return ApiResponse.Error(404, "Company Not Exits");
+                return false;
             }
 
             _companyRepository.Delete(company);
             await _unitOfWork.CommitAsync();
-            return ApiResponse.Ok();
+            return true;
         }
     }
 }

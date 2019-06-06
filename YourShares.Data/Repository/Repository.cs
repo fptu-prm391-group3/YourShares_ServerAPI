@@ -41,9 +41,7 @@ namespace YourShares.Data.Repository
                 T a = _unitOfWork.Context.Set<T>().Find(item);
                 existing.ToList().Add(a);
             }
-            // TODO Bad code here, existing always not null
-            // Should change to existing.Any()
-            if (existing != null) _unitOfWork.Context.Set<T>().RemoveRange(existing);
+            if (existing.Any()) _unitOfWork.Context.Set<T>().RemoveRange(existing);
         }
 
         public T GetById(Guid id)

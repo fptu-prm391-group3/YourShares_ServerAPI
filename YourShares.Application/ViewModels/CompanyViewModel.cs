@@ -1,14 +1,13 @@
-﻿using System;
+using System;
 
-namespace YourShares.Domain.Models
+namespace YourShares.Application.ViewModels
 {
-    public partial class Company
+    public class CompanyViewModel
     {
         public Guid Id { get; set; }
         public Guid AdminId { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
-        
         public string Phone { get; set; }
         public long Capital { get; set; }
         public long TotalShare { get; set; }

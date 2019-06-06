@@ -7,6 +7,6 @@ namespace YourShares.Application.SearchModels
         public string AdminUserName { get; set; }
         public string CompanyName { get; set; }
         public string Address { get; set; }
-        public string Capital { get; set; }
+        public long Capital { get; set; }
     }
 }
