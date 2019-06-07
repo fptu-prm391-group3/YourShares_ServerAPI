@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using YourShares.Application.Exceptions;
 using YourShares.Application.Interfaces;
 using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
@@ -41,7 +42,6 @@ namespace YourShares.Application.Services
             };
             _companyRepository.Insert(company);
             await _unitOfWork.CommitAsync();
-            // TODO Response the created company id
             return new CompanyViewModel
             {
                 AdminId = Guid.Parse(model.AdminId),
@@ -57,11 +57,6 @@ namespace YourShares.Application.Services
         public async Task<bool> UpdateCompany(CompanyUpdateModel model)
         {
             var company = _companyRepository.GetById(model.Id);
-            if (company == null)
-            {
-                return false;
-            }
-
             company.Name = model.CompanyName;
             company.Address = model.Address;
             company.Phone = model.Phone;
@@ -112,6 +107,10 @@ namespace YourShares.Application.Services
         public async Task<CompanyViewModel> GetById(Guid id)
         {
             var result = _companyRepository.GetById(id);
+            if (result == null)
+            {
+                throw new EntityNotFoundException($"Company id {id} not found");
+            }
             return new CompanyViewModel
             {
                 Id = result.Id,
@@ -128,11 +127,6 @@ namespace YourShares.Application.Services
         public async Task<bool> DeleteById(Guid id)
         {
             var company = _companyRepository.GetById(id);
-            if (company == null)
-            {
-                return false;
-            }
-
             _companyRepository.Delete(company);
             await _unitOfWork.CommitAsync();
             return true;

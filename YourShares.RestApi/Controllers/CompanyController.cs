@@ -35,6 +35,7 @@ namespace YourShares.RestApi.Controllers
         [Route("{id}")]
         public async Task<Response<CompanyViewModel>> GetCompanyById([FromRoute]Guid id)
         {
+            
             var result = await _customerAppService.GetById(id);
             if (result != null)
             {

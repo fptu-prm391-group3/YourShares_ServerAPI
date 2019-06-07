@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using YourShares.IoC;
+using YourShares.RestApi.Controllers;
 
 namespace YourShares.RestApi
 {
@@ -47,9 +48,10 @@ namespace YourShares.RestApi
                 app.UseDeveloperExceptionPage();
             else
                 app.UseHsts();
-
             // app.UseHttpsRedirection();
             // app.UseAuthentication();
+            // use exception handle middleware
+            app.UseMiddleware(typeof(ExceptionHandleController));
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(x =>

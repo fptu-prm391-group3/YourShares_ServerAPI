@@ -2,7 +2,6 @@
 {
     public static class ApiResponse
     {
-        // TODO change Response type to ApiResponse, data field to Object T
         public static Response<T> Ok<T>(T data, long? count)
         {
             return new Response<T>
