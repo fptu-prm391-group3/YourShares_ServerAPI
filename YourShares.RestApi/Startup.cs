@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +35,7 @@ namespace YourShares.RestApi
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 s.IncludeXmlComments(xmlPath);
             });
-            
+
             RegisterServices(services);
         }
 
@@ -54,12 +52,9 @@ namespace YourShares.RestApi
             app.UseMiddleware(typeof(ExceptionHandleController));
             app.UseMvc();
             app.UseSwagger();
-            app.UseSwaggerUI(x =>
-            {
-                x.SwaggerEndpoint("/swagger/v1/swagger.json", "YourShares API");
-            });
+            app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "YourShares API"); });
         }
-        
+
         private static void RegisterServices(IServiceCollection services)
         {
             // Adding dependencies from another layers (isolated from Presentation)

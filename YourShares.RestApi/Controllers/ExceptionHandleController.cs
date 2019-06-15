@@ -2,12 +2,13 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using YourShares.Application.Exceptions;
+using YourShares.RestApi.ApiResponse;
 
 namespace YourShares.RestApi.Controllers
 {
-    
     public class ExceptionHandleController
     {
         private readonly RequestDelegate _next;
@@ -32,12 +33,19 @@ namespace YourShares.RestApi.Controllers
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             var code = (int) HttpStatusCode.InternalServerError;
-            if (ex is EntityNotFoundException)
+            var errMsg = ex.Message;
+            switch (ex)
             {
-                code = (int) HttpStatusCode.NotFound;
+                case EntityNotFoundException _:
+                    code = (int) HttpStatusCode.NotFound;
+                    break;
+                case DbUpdateException _:
+                    code = (int) HttpStatusCode.InternalServerError;
+                    errMsg = "Fail to update data. Database error occurs";
+                    break;
             }
 
-            var response = ApiResponse.ApiResponse.Error(code, ex.Message);
+            var response = new ResponseBuilder<dynamic>().NotFound(errMsg).build();
             context.Response.StatusCode = code;
             return context.Response.WriteAsync(JsonConvert.SerializeObject(response));
         }

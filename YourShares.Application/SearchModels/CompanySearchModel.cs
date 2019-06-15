@@ -1,5 +1,3 @@
-using YourShares.Application.ViewModels;
-
 namespace YourShares.Application.SearchModels
 {
     public class CompanySearchModel : BaseSearchModel

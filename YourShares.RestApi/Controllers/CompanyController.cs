@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
 using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
-using YourShares.Domain.Models;
 using YourShares.RestApi.ApiResponse;
 
 namespace YourShares.RestApi.Controllers
@@ -19,103 +18,84 @@ namespace YourShares.RestApi.Controllers
         private readonly ICompanyService _customerAppService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CompanyController"/> class.
+        ///     Initializes a new instance of the <see cref="CompanyController" /> class.
         /// </summary>
         /// <param name="companyService">The company service.</param>
         public CompanyController(ICompanyService companyService)
         {
             _customerAppService = companyService;
         }
-        
+
         /// <summary>
-        /// Gets company specified by its identifier.
+        ///     Gets company specified by its identifier.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<Response<CompanyViewModel>> GetCompanyById([FromRoute]Guid id)
+        public async Task<ResponseModel<CompanyViewModel>> GetCompanyById([FromRoute] Guid id)
         {
-            
             var result = await _customerAppService.GetById(id);
-            if (result != null)
-            {
-                Response.StatusCode = (int) HttpStatusCode.OK;
-                return ApiResponse.ApiResponse.Ok(result, 1);
-            }
-            Response.StatusCode = (int) HttpStatusCode.NotFound;
-            // TODO throw exception if not found
-            return null;
+            Response.StatusCode = (int) HttpStatusCode.OK;
+            return new ResponseBuilder<CompanyViewModel>().Success()
+                .Data(result)
+                .Count(1)
+                .build();
         }
-        
+
         /// <summary>
-        /// Search company by Admin, CompanyName, Address, Capital.
+        ///     Search company by Admin, CompanyName, Address, Capital.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<Response<List<CompanyViewSearchModel>>> SearchCompany([FromQuery] CompanySearchModel model)
+        public async Task<ResponseModel<IQueryable<CompanyViewSearchModel>>> SearchCompany(
+            [FromQuery] CompanySearchModel model)
         {
             var result = await _customerAppService.SearchCompany(model);
-            if (result != null)
-            {
-                Response.StatusCode = (int) HttpStatusCode.OK;
-                return ApiResponse.ApiResponse.Ok(result, result.Count);
-            }
-            Response.StatusCode = (int) HttpStatusCode.BadRequest;
-            return null;
+            Response.StatusCode = (int) HttpStatusCode.OK;
+            return new ResponseBuilder<IQueryable<CompanyViewSearchModel>>().Success()
+                .Data(result)
+                .Count(result.Count())
+                .build();
         }
-        
+
         /// <summary>
-        /// Creates the company.
+        ///     Creates the company.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<Response<CompanyViewModel>> CreateCompany([FromBody]CompanyCreateModel model)
+        public async Task<ResponseModel<CompanyViewModel>> CreateCompany([FromBody] CompanyCreateModel model)
         {
             var createdResult = await _customerAppService.CreateCompany(model);
-            if (createdResult != null)
-            {
-                Response.StatusCode = (int) HttpStatusCode.Created;
-                return ApiResponse.ApiResponse.Ok(createdResult, 1);
-            }
-
-            Response.StatusCode = (int) HttpStatusCode.UnprocessableEntity;
-            return null;
+            Response.StatusCode = (int) HttpStatusCode.Created;
+            return new ResponseBuilder<CompanyViewModel>().Success()
+                .Data(createdResult)
+                .build();
         }
 
         /// <summary>
-        /// Updates the company with details in the request body.
+        ///     Updates the company with details in the request body.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
         [HttpPut]
-        public async Task UpdateCompany([FromBody]CompanyUpdateModel model)
+        public async Task UpdateCompany([FromBody] CompanyUpdateModel model)
         {
-            var updated = await _customerAppService.UpdateCompany(model);
-            if (updated)
-            {
-                Response.StatusCode = (int) HttpStatusCode.OK;
-            }
-
-            Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            await _customerAppService.UpdateCompany(model);
+            Response.StatusCode = (int) HttpStatusCode.OK;
         }
 
 
         /// <summary>
-        /// Delete a company specified by its identifier.
+        ///     Delete a company specified by its identifier.
         /// </summary>
         /// <returns></returns>
         [HttpDelete]
         [Route("{id}")]
-        public async Task DeleteCompanyById([FromRoute]Guid id)
+        public async Task DeleteCompanyById([FromRoute] Guid id)
         {
-            var deleted = await _customerAppService.DeleteById(id);
-            if (deleted)
-            {
-                Response.StatusCode = (int) HttpStatusCode.Accepted;
-            }
-
-            Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            await _customerAppService.DeleteById(id);
+            Response.StatusCode = (int) HttpStatusCode.Accepted;
         }
     }
 }

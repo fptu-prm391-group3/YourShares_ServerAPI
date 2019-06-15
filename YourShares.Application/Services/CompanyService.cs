@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -16,8 +15,8 @@ namespace YourShares.Application.Services
     public class CompanyService : ICompanyService
     {
         private readonly IRepository<Company> _companyRepository;
-        private readonly IRepository<User> _userRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IRepository<User> _userRepository;
 
         public CompanyService(IUnitOfWork unitOfWork
             , IRepository<Company> companyRepository
@@ -64,29 +63,30 @@ namespace YourShares.Application.Services
             company.TotalShare = model.TotalShare;
             company.OptionPollAmount = model.OptionPoll;
             _companyRepository.Insert(company);
-            // TODO Handle fail commit
             await _unitOfWork.CommitAsync();
             return true;
         }
 
-        public async Task<List<CompanyViewSearchModel>> SearchCompany(CompanySearchModel model)
+        public async Task<IQueryable<CompanyViewSearchModel>> SearchCompany(CompanySearchModel model)
         {
             const string defaultSort = "CompanyName ASC";
-            string sortType = model.IsSortDesc ? "DESC" : "ASC";
-            string sortField = ValidateUtils.IsNullOrEmpty(model.SortField)
+            var sortType = model.IsSortDesc ? "DESC" : "ASC";
+            var sortField = ValidateUtils.IsNullOrEmpty(model.SortField)
                 ? defaultSort
                 : $"{model.SortField} {sortType}";
             var query = _userRepository.GetManyAsNoTracking(x =>
-                    (ValidateUtils.IsNullOrEmpty(model.AdminUserName) || x.Username == model.AdminUserName))
+                    ValidateUtils.IsNullOrEmpty(model.AdminUserName) || x.Username == model.AdminUserName)
                 .Select(x => new
                 {
                     x.UserId,
-                    x.Username,
+                    x.Username
                 })
                 .Join(_companyRepository.GetManyAsNoTracking(x =>
-                    (ValidateUtils.IsNullOrEmpty(model.Address) || x.Address.ToUpper().Contains(model.AdminUserName.ToUpper()))
+                    (ValidateUtils.IsNullOrEmpty(model.Address) ||
+                     x.Address.ToUpper().Contains(model.AdminUserName.ToUpper()))
                     && (model.Capital <= 0 || x.Capital == model.Capital)
-                    && (ValidateUtils.IsNullOrEmpty(model.CompanyName) || x.CompanyName.ToUpper().Contains(model.CompanyName.ToUpper()))
+                    && (ValidateUtils.IsNullOrEmpty(model.CompanyName) ||
+                        x.CompanyName.ToUpper().Contains(model.CompanyName.ToUpper()))
                 ), x => x.UserId, y => y.AdminUserId, (x, y) => new CompanyViewSearchModel
                 {
                     AdminUserName = x.Username,
@@ -99,18 +99,14 @@ namespace YourShares.Application.Services
                     TotalShare = y.TotalShare
                 }).OrderBy(sortField);
             var result = query.Skip((model.Page - 1) * model.PageSize)
-                .Take(model.PageSize)
-                .ToList();
+                .Take(model.PageSize);
             return result;
         }
 
         public async Task<CompanyViewModel> GetById(Guid id)
         {
             var result = _companyRepository.GetById(id);
-            if (result == null)
-            {
-                throw new EntityNotFoundException($"Company id {id} not found");
-            }
+            if (result == null) throw new EntityNotFoundException($"Company id {id} not found");
             return new CompanyViewModel
             {
                 Id = result.CompanyId,
