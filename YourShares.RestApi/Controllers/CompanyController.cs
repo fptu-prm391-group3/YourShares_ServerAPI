@@ -48,7 +48,7 @@ namespace YourShares.RestApi.Controllers
         }
         
         /// <summary>
-        /// Search company by Admin, Name, Address, Capital.
+        /// Search company by Admin, CompanyName, Address, Capital.
         /// </summary>
         /// <returns></returns>
         [HttpGet]

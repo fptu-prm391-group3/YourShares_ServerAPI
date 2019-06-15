@@ -30,8 +30,9 @@ namespace YourShares.IoC
             
             // Data- Repo
             services.AddScoped<IRepository<Company>, Repository<Company>>();
-            services.AddScoped<IRepository<Administrator>, Repository<Administrator>>();
-            services.AddScoped<IRepository<ShareAccounting>, Repository<ShareAccounting>>();
+            services.AddScoped<IRepository<BonusShare>, Repository<BonusShare>>();
+            services.AddScoped<IRepository<User>, Repository<User>>();
+            services.AddScoped<IRepository<ShareAccount>, Repository<ShareAccount>>();
             services.AddScoped<IRepository<Shareholder>, Repository<Shareholder>>();
             services.AddScoped<IRepository<Transaction>, Repository<Transaction>>();
 

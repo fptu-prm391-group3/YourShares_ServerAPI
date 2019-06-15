@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using YourShares.Data.Mappings;
 using YourShares.Domain.Models;
 
 namespace YourShares.Data
@@ -10,11 +9,12 @@ namespace YourShares.Data
     {
         private readonly IHostingEnvironment _env;
 
+        public virtual DbSet<BonusShare> BonusShare { get; set; }
         public virtual DbSet<Company> Company { get; set; }
-        public virtual DbSet<Administrator> Administrator { get; set; }
+        public virtual DbSet<ShareAccount> ShareAccount { get; set; }
         public virtual DbSet<Shareholder> Shareholder { get; set; }
-        public virtual DbSet<ShareAccounting> ShareAccounting { get; set; }
         public virtual DbSet<Transaction> Transaction { get; set; }
+        public virtual DbSet<User> User { get; set; }
 
         public YourSharesContext(IHostingEnvironment env)
         {
@@ -23,60 +23,149 @@ namespace YourShares.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Administrator>(entity =>
+            modelBuilder.HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
+
+            modelBuilder.Entity<BonusShare>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+                entity.ToTable("Bonus_Share");
 
-                entity.Property(e => e.Password).HasMaxLength(255);
+                entity.Property(e => e.BonusShareId)
+                    .HasColumnName("Bonus_Share_ID")
+                    .ValueGeneratedNever();
 
-                entity.Property(e => e.UserName).HasMaxLength(255);
+                entity.Property(e => e.AssignDate)
+                    .IsRequired()
+                    .HasColumnName("Assign_Date")
+                    .IsRowVersion();
+
+                entity.Property(e => e.ConvertibleRatio).HasColumnName("Convertible_Ratio");
+
+                entity.Property(e => e.ConvertibleTime).HasColumnName("Convertible_Time");
+
+                entity.Property(e => e.ShareAccountId).HasColumnName("Share_Account_ID");
             });
 
             modelBuilder.Entity<Company>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+                entity.Property(e => e.CompanyId)
+                    .HasColumnName("Company_ID")
+                    .ValueGeneratedNever();
 
-                entity.Property(e => e.Address).HasMaxLength(255);
+                entity.Property(e => e.Address)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Capital).HasMaxLength(255);
+                entity.Property(e => e.AdminUserId).HasColumnName("Admin_User_ID");
 
-                entity.Property(e => e.Name).HasMaxLength(255);
+                entity.Property(e => e.CompanyName)
+                    .IsRequired()
+                    .HasColumnName("Company_Name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TotalShare)
+                    .IsRequired()
+                    .HasColumnName("Total_Share");
+
+                entity.Property(e => e.OptionPollAmount).HasColumnName("Option_Poll_Amount");
+
+                entity.Property(e => e.Phone)
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
             });
 
-            modelBuilder.Entity<ShareAccounting>(entity =>
+            modelBuilder.Entity<ShareAccount>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+                entity.ToTable("Share_Account");
+
+                entity.Property(e => e.ShareAccountId)
+                    .HasColumnName("Share_Account_ID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.ShareAmount).HasColumnName("Share_Amount");
+
+                entity.Property(e => e.ShareType).HasColumnName("Share_Type");
+
+                entity.Property(e => e.ShareholderId).HasColumnName("Shareholder_ID");
             });
 
             modelBuilder.Entity<Shareholder>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+                entity.Property(e => e.ShareholderId)
+                    .HasColumnName("Shareholder_ID")
+                    .ValueGeneratedNever();
 
-                entity.Property(e => e.Address).HasMaxLength(255);
+                entity.Property(e => e.CompanyId).HasColumnName("Company_ID");
 
-                entity.Property(e => e.Email).HasMaxLength(50);
+                entity.Property(e => e.ShareholderRole).HasColumnName("Shareholder_Role");
 
-                entity.Property(e => e.FirstName).HasMaxLength(255);
-
-                entity.Property(e => e.LastName).HasMaxLength(255);
-
-                entity.Property(e => e.Password).HasMaxLength(255);
-
-                entity.Property(e => e.Phone).HasMaxLength(10);
-
-                entity.Property(e => e.UserName).HasMaxLength(255);
+                entity.Property(e => e.UserId).HasColumnName("User_ID");
             });
 
             modelBuilder.Entity<Transaction>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+                entity.Property(e => e.TransactionId)
+                    .HasColumnName("Transaction_ID")
+                    .ValueGeneratedNever();
 
-                entity.Property(e => e.BuyerId).HasColumnName("BuyerID");
+                entity.Property(e => e.ShareAccountId).HasColumnName("Share_Account_ID");
 
-                entity.Property(e => e.TimeStamp).IsRowVersion();
+                entity.Property(e => e.TransactionAmount).HasColumnName("Transaction_Amount");
+
+                entity.Property(e => e.TransactionDate)
+                    .IsRequired()
+                    .HasColumnName("Transaction_Date")
+                    .IsRowVersion();
+
+                entity.Property(e => e.TransactionStatus).HasColumnName("Transaction_Status");
+
+                entity.Property(e => e.TransactionType).HasColumnName("Transaction_Type");
+
+                entity.Property(e => e.TransactionValue).HasColumnName("Transaction_Value");
             });
 
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(e => e.UserId)
+                    .HasColumnName("User_ID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Address)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FirstName)
+                    .IsRequired()
+                    .HasColumnName("First_Name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.LastName)
+                    .HasColumnName("Last_Name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Phone)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UserRole).HasColumnName("User_Role");
+
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -88,7 +177,7 @@ namespace YourShares.Data
                 .Build();
 
             // define the database to use
-            optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+            optionsBuilder.UseSqlServer(config.GetConnectionString("LocalConnection"));
         }
     }
 }

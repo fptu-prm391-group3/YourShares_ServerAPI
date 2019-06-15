@@ -16,53 +16,53 @@ namespace YourShares.Application.Services
     public class CompanyService : ICompanyService
     {
         private readonly IRepository<Company> _companyRepository;
-        private readonly IRepository<Administrator> _administratorRepository;
+        private readonly IRepository<User> _userRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public CompanyService(IUnitOfWork unitOfWork
             , IRepository<Company> companyRepository
-            , IRepository<Administrator> administratorRepository)
+            , IRepository<User> userRepository)
         {
             _unitOfWork = unitOfWork;
             _companyRepository = companyRepository;
-            _administratorRepository = administratorRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<CompanyViewModel> CreateCompany(CompanyCreateModel model)
         {
             var company = new Company
             {
-                AdminId = Guid.Parse(model.AdminId),
-                Name = model.CompanyName,
+                AdminUserId = Guid.Parse(model.AdminUserId),
+                CompanyName = model.CompanyName,
                 Address = model.Address,
                 Phone = model.Phone,
                 Capital = model.Capital,
-                TotalShare = model.TotalShares,
-                OptionPoll = model.OptionPoll
+                TotalShare = model.TotalShare,
+                OptionPollAmount = model.OptionPoll
             };
             _companyRepository.Insert(company);
             await _unitOfWork.CommitAsync();
             return new CompanyViewModel
             {
-                AdminId = Guid.Parse(model.AdminId),
-                Name = model.CompanyName,
+                AdminUserId = Guid.Parse(model.AdminUserId),
+                CompanyName = model.CompanyName,
                 Address = model.Address,
                 Phone = model.Phone,
                 Capital = model.Capital,
-                TotalShare = model.TotalShares,
+                TotalShare = model.TotalShare,
                 OptionPoll = model.OptionPoll
             };
         }
 
         public async Task<bool> UpdateCompany(CompanyUpdateModel model)
         {
-            var company = _companyRepository.GetById(model.Id);
-            company.Name = model.CompanyName;
+            var company = _companyRepository.GetById(model.CompanyId);
+            company.CompanyName = model.CompanyName;
             company.Address = model.Address;
             company.Phone = model.Phone;
             company.Capital = model.Capital;
-            company.TotalShare = model.TotalShares;
-            company.OptionPoll = model.OptionPoll;
+            company.TotalShare = model.TotalShare;
+            company.OptionPollAmount = model.OptionPoll;
             _companyRepository.Insert(company);
             // TODO Handle fail commit
             await _unitOfWork.CommitAsync();
@@ -76,27 +76,27 @@ namespace YourShares.Application.Services
             string sortField = ValidateUtils.IsNullOrEmpty(model.SortField)
                 ? defaultSort
                 : $"{model.SortField} {sortType}";
-            var query = _administratorRepository.GetManyAsNoTracking(x =>
-                    (ValidateUtils.IsNullOrEmpty(model.AdminUserName) || x.UserName == model.AdminUserName))
+            var query = _userRepository.GetManyAsNoTracking(x =>
+                    (ValidateUtils.IsNullOrEmpty(model.AdminUserName) || x.Username == model.AdminUserName))
                 .Select(x => new
                 {
-                    x.Id,
-                    x.UserName,
+                    x.UserId,
+                    x.Username,
                 })
                 .Join(_companyRepository.GetManyAsNoTracking(x =>
                     (ValidateUtils.IsNullOrEmpty(model.Address) || x.Address.ToUpper().Contains(model.AdminUserName.ToUpper()))
                     && (model.Capital <= 0 || x.Capital == model.Capital)
-                    && (ValidateUtils.IsNullOrEmpty(model.CompanyName) || x.Name.ToUpper().Contains(model.CompanyName.ToUpper()))
-                ), x => x.Id, y => y.AdminId, (x, y) => new CompanyViewSearchModel
+                    && (ValidateUtils.IsNullOrEmpty(model.CompanyName) || x.CompanyName.ToUpper().Contains(model.CompanyName.ToUpper()))
+                ), x => x.UserId, y => y.AdminUserId, (x, y) => new CompanyViewSearchModel
                 {
-                    AdminUserName = x.UserName,
+                    AdminUserName = x.Username,
                     Address = y.Address,
                     Phone = y.Phone,
                     Capital = y.Capital,
-                    Id = y.Id,
-                    CompanyName = y.Name,
-                    OptionPoll = y.OptionPoll,
-                    TotalShares = y.TotalShare
+                    CompanyId = y.AdminUserId,
+                    CompanyName = y.CompanyName,
+                    OptionPoll = y.OptionPollAmount,
+                    TotalShare = y.TotalShare
                 }).OrderBy(sortField);
             var result = query.Skip((model.Page - 1) * model.PageSize)
                 .Take(model.PageSize)
@@ -113,13 +113,13 @@ namespace YourShares.Application.Services
             }
             return new CompanyViewModel
             {
-                Id = result.Id,
-                AdminId = result.AdminId,
-                Name = result.Name,
+                Id = result.CompanyId,
+                AdminUserId = result.AdminUserId,
+                CompanyName = result.CompanyName,
                 Phone = result.Phone,
                 Address = result.Address,
                 Capital = result.Capital,
-                OptionPoll = result.OptionPoll,
+                OptionPoll = result.OptionPollAmount,
                 TotalShare = result.TotalShare
             };
         }
