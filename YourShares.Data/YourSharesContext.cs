@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using YourShares.Domain.Models;
+using YourShares.RestApi.Models;
 
 namespace YourShares.Data
 {
@@ -9,12 +10,19 @@ namespace YourShares.Data
     {
         private readonly IHostingEnvironment _env;
 
-        public virtual DbSet<BonusShare> BonusShare { get; set; }
         public virtual DbSet<Company> Company { get; set; }
+        public virtual DbSet<GoogleAccount> GoogleAccount { get; set; }
+        public virtual DbSet<RefShareTypeCode> RefShareTypeCode { get; set; }
+        public virtual DbSet<RefShareholderTypeCode> RefShareholderTypeCode { get; set; }
+        public virtual DbSet<RefTransactionStatusCode> RefTransactionStatusCode { get; set; }
+        public virtual DbSet<RefTransactionTypeCode> RefTransactionTypeCode { get; set; }
+        public virtual DbSet<RefUserAccountStatusCode> RefUserAccountStatusCode { get; set; }
+        public virtual DbSet<RestrictedShare> RestrictedShare { get; set; }
         public virtual DbSet<ShareAccount> ShareAccount { get; set; }
         public virtual DbSet<Shareholder> Shareholder { get; set; }
         public virtual DbSet<Transaction> Transaction { get; set; }
-        public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<UserAccount> UserAccount { get; set; }
+        public virtual DbSet<UserProfile> UserProfile { get; set; }
 
         public YourSharesContext(IHostingEnvironment env)
         {
@@ -25,145 +33,324 @@ namespace YourShares.Data
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
 
-            modelBuilder.Entity<BonusShare>(entity =>
-            {
-                entity.ToTable("Bonus_Share");
-
-                entity.Property(e => e.BonusShareId)
-                    .HasColumnName("Bonus_Share_ID")
-                    .ValueGeneratedOnAdd();
-
-                entity.Property(e => e.AssignDate)
-                    .IsRequired()
-                    .HasColumnName("Assign_Date")
-                    .IsRowVersion();
-
-                entity.Property(e => e.ConvertibleRatio).HasColumnName("Convertible_Ratio");
-
-                entity.Property(e => e.ConvertibleTime).HasColumnName("Convertible_Time");
-
-                entity.Property(e => e.ShareAccountId).HasColumnName("Share_Account_ID");
-            });
-
             modelBuilder.Entity<Company>(entity =>
             {
+                entity.ToTable("company");
+
                 entity.Property(e => e.CompanyId)
-                    .HasColumnName("Company_ID")
+                    .HasColumnName("company_id")
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Address)
+                    .HasColumnName("address")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.AdminUserId).HasColumnName("Admin_User_ID");
+                entity.Property(e => e.AdminProfileId).HasColumnName("admin_profile_id");
+
+                entity.Property(e => e.Capital).HasColumnName("capital");
 
                 entity.Property(e => e.CompanyName)
                     .IsRequired()
-                    .HasColumnName("Company_Name")
+                    .HasColumnName("company_name")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TotalShare)
-                    .IsRequired()
-                    .HasColumnName("Total_Share");
-
-                entity.Property(e => e.OptionPollAmount).HasColumnName("Option_Poll_Amount");
+                entity.Property(e => e.OptionPollAmount).HasColumnName("option_poll_amount");
 
                 entity.Property(e => e.Phone)
+                    .HasColumnName("phone")
                     .HasMaxLength(15)
                     .IsUnicode(false);
+
+                entity.Property(e => e.TotalShares).HasColumnName("total_shares");
+            });
+
+            modelBuilder.Entity<GoogleAccount>(entity =>
+            {
+                entity.HasKey(e => e.UserProfileId)
+                    .HasName("PK_google_account_user_profile_id");
+
+                entity.ToTable("google_account");
+
+                entity.Property(e => e.UserProfileId)
+                    .HasColumnName("user_profile_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.GoogleAccountId)
+                    .IsRequired()
+                    .HasColumnName("google_account_id")
+                    .HasMaxLength(30)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<RefShareTypeCode>(entity =>
+            {
+                entity.HasKey(e => e.ShareTypeCode)
+                    .HasName("PK_ref_share_type_code_share_type_code");
+
+                entity.ToTable("ref_share_type_code");
+
+                entity.Property(e => e.ShareTypeCode)
+                    .HasColumnName("share_type_code")
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<RefShareholderTypeCode>(entity =>
+            {
+                entity.HasKey(e => e.ShareholderTypeCode)
+                    .HasName("PK_ref_shareholder_type_code_shareholder_type_code");
+
+                entity.ToTable("ref_shareholder_type_code");
+
+                entity.Property(e => e.ShareholderTypeCode)
+                    .HasColumnName("shareholder_type_code")
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<RefTransactionStatusCode>(entity =>
+            {
+                entity.HasKey(e => e.TransactionStatusCode)
+                    .HasName("PK_ref_transaction_status_code_transaction_status_code");
+
+                entity.ToTable("ref_transaction_status_code");
+
+                entity.Property(e => e.TransactionStatusCode)
+                    .HasColumnName("transaction_status_code")
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<RefTransactionTypeCode>(entity =>
+            {
+                entity.HasKey(e => e.TransactionTypeCode)
+                    .HasName("PK_ref_transaction_type_code_transaction_type_code");
+
+                entity.ToTable("ref_transaction_type_code");
+
+                entity.Property(e => e.TransactionTypeCode)
+                    .HasColumnName("transaction_type_code")
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<RefUserAccountStatusCode>(entity =>
+            {
+                entity.HasKey(e => e.UserAccountStatusCode)
+                    .HasName("PK_ref_user_account_status_code_user_account_status_code");
+
+                entity.ToTable("ref_user_account_status_code");
+
+                entity.Property(e => e.UserAccountStatusCode)
+                    .HasColumnName("user_account_status_code")
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<RestrictedShare>(entity =>
+            {
+                entity.HasKey(e => e.ShareAccountId)
+                    .HasName("PK_restricted_share_share_account_id");
+
+                entity.ToTable("restricted_share");
+
+                entity.Property(e => e.ShareAccountId)
+                    .HasColumnName("share_account_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.AssignDate)
+                    .IsRequired()
+                    .HasColumnName("assign_date")
+                    .IsRowVersion();
+
+                entity.Property(e => e.ConvertibleRatio).HasColumnName("convertible_ratio");
+
+                entity.Property(e => e.ConvertibleTime).HasColumnName("convertible_time");
             });
 
             modelBuilder.Entity<ShareAccount>(entity =>
             {
-                entity.ToTable("Share_Account");
+                entity.ToTable("share_account");
 
                 entity.Property(e => e.ShareAccountId)
-                    .HasColumnName("Share_Account_ID")
+                    .HasColumnName("share_account_id")
                     .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.ShareAmount).HasColumnName("Share_Amount");
+                entity.Property(e => e.ShareAmount).HasColumnName("share_amount");
 
-                entity.Property(e => e.ShareType).HasColumnName("Share_Type");
+                entity.Property(e => e.ShareTypeCode)
+                    .HasColumnName("share_type_code")
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.ShareholderId).HasColumnName("Shareholder_ID");
+                entity.Property(e => e.ShareholderId).HasColumnName("shareholder_id");
             });
 
             modelBuilder.Entity<Shareholder>(entity =>
             {
+                entity.ToTable("shareholder");
+
                 entity.Property(e => e.ShareholderId)
-                    .HasColumnName("Shareholder_ID")
+                    .HasColumnName("shareholder_id")
                     .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.CompanyId).HasColumnName("Company_ID");
+                entity.Property(e => e.CompanyId).HasColumnName("company_id");
 
-                entity.Property(e => e.ShareholderRole).HasColumnName("Shareholder_Role");
+                entity.Property(e => e.ShareholderTypeCode)
+                    .IsRequired()
+                    .HasColumnName("shareholder_type_code")
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.UserId).HasColumnName("User_ID");
+                entity.Property(e => e.UserId).HasColumnName("user_id");
             });
 
             modelBuilder.Entity<Transaction>(entity =>
             {
+                entity.ToTable("transaction");
+
                 entity.Property(e => e.TransactionId)
-                    .HasColumnName("Transaction_ID")
+                    .HasColumnName("transaction_id")
                     .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.ShareAccountId).HasColumnName("Share_Account_ID");
+                entity.Property(e => e.ShareAccountId).HasColumnName("share_account_id");
 
-                entity.Property(e => e.TransactionAmount).HasColumnName("Transaction_Amount");
+                entity.Property(e => e.TransactionAmount).HasColumnName("transaction_amount");
 
                 entity.Property(e => e.TransactionDate)
                     .IsRequired()
-                    .HasColumnName("Transaction_Date")
+                    .HasColumnName("transaction_date")
                     .IsRowVersion();
 
-                entity.Property(e => e.TransactionStatus).HasColumnName("Transaction_Status");
+                entity.Property(e => e.TransactionStatusCode)
+                    .IsRequired()
+                    .HasColumnName("transaction_status_code")
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.TransactionType).HasColumnName("Transaction_Type");
+                entity.Property(e => e.TransactionTypeCode)
+                    .IsRequired()
+                    .HasColumnName("transaction_type_code")
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.TransactionValue).HasColumnName("Transaction_Value");
+                entity.Property(e => e.TransactionValue).HasColumnName("transaction_value");
             });
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<UserAccount>(entity =>
             {
-                entity.Property(e => e.UserId)
-                    .HasColumnName("User_ID")
-                    .ValueGeneratedOnAdd();
+                entity.HasKey(e => e.UserProfileId)
+                    .HasName("PK_user_account_user_profile_id");
 
-                entity.Property(e => e.Address)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.ToTable("user_account");
+
+                entity.Property(e => e.UserProfileId)
+                    .HasColumnName("user_profile_id")
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Email)
                     .IsRequired()
-                    .HasMaxLength(50)
+                    .HasColumnName("email")
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.EmailConfirmationToken)
+                    .HasColumnName("email_confirmation_token")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PasswordHash)
+                    .IsRequired()
+                    .HasColumnName("password_hash")
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PasswordHashAlgorithm)
+                    .IsRequired()
+                    .HasColumnName("password_hash_algorithm")
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PasswordReminderToken)
+                    .HasColumnName("password_reminder_token")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UserAccountStatusCode)
+                    .IsRequired()
+                    .HasColumnName("user_account_status_code")
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<UserProfile>(entity =>
+            {
+                entity.ToTable("user_profile");
+
+                entity.Property(e => e.UserProfileId)
+                    .HasColumnName("user_profile_id")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Address)
+                    .HasColumnName("address")
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Email)
+                    .HasColumnName("email")
+                    .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.Property(e => e.FirstName)
-                    .IsRequired()
-                    .HasColumnName("First_Name")
+                    .HasColumnName("first_name")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
                 entity.Property(e => e.LastName)
-                    .HasColumnName("Last_Name")
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Password)
-                    .IsRequired()
+                    .HasColumnName("last_name")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Phone)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserRole).HasColumnName("User_Role");
-
-                entity.Property(e => e.Username)
-                    .IsRequired()
-                    .HasMaxLength(50)
+                    .HasColumnName("phone")
+                    .HasMaxLength(15)
                     .IsUnicode(false);
             });
         }

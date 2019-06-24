@@ -2,9 +2,8 @@
 
 namespace YourShares.Domain.Models
 {
-    public partial class BonusShare
+    public partial class RestrictedShare
     {
-        public Guid BonusShareId { get; set; }
         public Guid ShareAccountId { get; set; }
         public byte[] AssignDate { get; set; }
         public long ConvertibleTime { get; set; }

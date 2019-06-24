@@ -32,7 +32,7 @@ namespace YourShares.RestApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("{id}")]
+        [Route("/api/user/{id}")]
         public async Task<ResponseModel<UserViewDetailModel>> GetUserById([FromRoute] Guid id)
         {
             var result = await _userService.GetById(id);

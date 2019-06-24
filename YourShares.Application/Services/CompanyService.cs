@@ -9,6 +9,7 @@ using YourShares.Application.ViewModels;
 using YourShares.Data.Interfaces;
 using YourShares.Domain.Models;
 using YourShares.Domain.Util;
+using YourShares.RestApi.Models;
 
 namespace YourShares.Application.Services
 {
@@ -16,11 +17,11 @@ namespace YourShares.Application.Services
     {
         private readonly IRepository<Company> _companyRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<User> _userRepository;
+        private readonly IRepository<UserProfile> _userRepository;
 
         public CompanyService(IUnitOfWork unitOfWork
             , IRepository<Company> companyRepository
-            , IRepository<User> userRepository)
+            , IRepository<UserProfile> userRepository)
         {
             _unitOfWork = unitOfWork;
             _companyRepository = companyRepository;
@@ -31,12 +32,12 @@ namespace YourShares.Application.Services
         {
             var company = new Company
             {
-                AdminUserId = Guid.Parse(model.AdminUserId),
+                AdminProfileId = Guid.Parse(model.AdminUserId),
                 CompanyName = model.CompanyName,
                 Address = model.Address,
                 Phone = model.Phone,
                 Capital = model.Capital,
-                TotalShare = model.TotalShare,
+                TotalShares = model.TotalShares,
                 OptionPollAmount = model.OptionPoll
             };
             _companyRepository.Insert(company);
@@ -48,7 +49,7 @@ namespace YourShares.Application.Services
                 Address = model.Address,
                 Phone = model.Phone,
                 Capital = model.Capital,
-                TotalShare = model.TotalShare,
+                TotalShares = model.TotalShares,
                 OptionPoll = model.OptionPoll
             };
         }
@@ -60,7 +61,7 @@ namespace YourShares.Application.Services
             company.Address = model.Address;
             company.Phone = model.Phone;
             company.Capital = model.Capital;
-            company.TotalShare = model.TotalShare;
+            company.TotalShares = model.TotalShares;
             company.OptionPollAmount = model.OptionPoll;
             _companyRepository.Update(company);
             await _unitOfWork.CommitAsync();
@@ -75,28 +76,28 @@ namespace YourShares.Application.Services
                 ? defaultSort
                 : $"{model.SortField} {sortType}";
             var query = _userRepository.GetManyAsNoTracking(x =>
-                    ValidateUtils.IsNullOrEmpty(model.AdminUserName) || x.Username == model.AdminUserName)
+                    ValidateUtils.IsNullOrEmpty(model.AdminEmail) || x.Email == model.AdminEmail)
                 .Select(x => new
                 {
-                    x.UserId,
-                    x.Username
+                    x.UserProfileId,
+                    x.Email
                 })
                 .Join(_companyRepository.GetManyAsNoTracking(x =>
                     (ValidateUtils.IsNullOrEmpty(model.Address) ||
-                     x.Address.ToUpper().Contains(model.AdminUserName.ToUpper()))
+                     x.Address.ToUpper().Contains(model.AdminEmail.ToUpper()))
                     && (model.Capital <= 0 || x.Capital == model.Capital)
                     && (ValidateUtils.IsNullOrEmpty(model.CompanyName) ||
                         x.CompanyName.ToUpper().Contains(model.CompanyName.ToUpper()))
-                ), x => x.UserId, y => y.AdminUserId, (x, y) => new CompanyViewSearchModel
+                ), x => x.UserProfileId, y => y.AdminProfileId, (x, y) => new CompanyViewSearchModel
                 {
-                    AdminUserName = x.Username,
+                    AdminEmail = x.Email,
                     Address = y.Address,
                     Phone = y.Phone,
                     Capital = y.Capital,
-                    CompanyId = y.AdminUserId,
+                    CompanyId = y.CompanyId,
                     CompanyName = y.CompanyName,
                     OptionPoll = y.OptionPollAmount,
-                    TotalShare = y.TotalShare
+                    TotalShares = y.TotalShares
                 }).OrderBy(sortField);
             var result = query.Skip((model.Page - 1) * model.PageSize)
                 .Take(model.PageSize);
@@ -110,13 +111,13 @@ namespace YourShares.Application.Services
             return new CompanyViewModel
             {
                 Id = result.CompanyId,
-                AdminUserId = result.AdminUserId,
+                AdminUserId = result.AdminProfileId,
                 CompanyName = result.CompanyName,
                 Phone = result.Phone,
                 Address = result.Address,
                 Capital = result.Capital,
                 OptionPoll = result.OptionPollAmount,
-                TotalShare = result.TotalShare
+                TotalShares = result.TotalShares
             };
         }
 

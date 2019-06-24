@@ -6,7 +6,7 @@ namespace YourShares.Application.ViewModels
     {
         public Guid CompanyId { get; set; }
 
-        public string AdminUserName { get; set; }
+        public string AdminEmail { get; set; }
 
         public string CompanyName { get; set; }
 
@@ -16,7 +16,7 @@ namespace YourShares.Application.ViewModels
 
         public long Capital { get; set; }
 
-        public long TotalShare { get; set; }
+        public long TotalShares { get; set; }
 
         public long? OptionPoll { get; set; }
     }
