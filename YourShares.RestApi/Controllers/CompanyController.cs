@@ -44,11 +44,11 @@ namespace YourShares.RestApi.Controllers
         }
 
         /// <summary>
-        ///     Search company by Admin, CompanyName, Address, Capital.
+        ///     Search company by CompanyName.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ResponseModel<IQueryable<CompanyViewSearchModel>>> SearchCompany(
             [FromQuery] CompanySearchModel model)
         {
