@@ -6,10 +6,10 @@ namespace YourShares.Domain.Models
     {
         public Guid TransactionId { get; set; }
         public Guid ShareAccountId { get; set; }
-        public byte[] TransactionDate { get; set; }
         public long TransactionAmount { get; set; }
+        public byte[] TransactionDate { get; set; }
+        public string TransactionTypeCode { get; set; }
         public long TransactionValue { get; set; }
-        public short TransactionStatus { get; set; }
-        public short TransactionType { get; set; }
+        public string TransactionStatusCode { get; set; }
     }
 }
