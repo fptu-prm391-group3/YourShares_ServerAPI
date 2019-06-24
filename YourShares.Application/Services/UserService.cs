@@ -23,6 +23,21 @@ namespace YourShares.Application.Services
             _userRepository = userRepository;
         }
 
+        public async Task<UserViewDetailModel> GetById(Guid id)
+        {
+            var user = _userRepository.GetById(id);
+            if (user == null) throw new EntityNotFoundException($"User id {id} not found");
+
+            return new UserViewDetailModel
+            {
+                UserId = user.UserId,
+                Address = user.Address,
+                Email = user.Email,
+                Name = $"{user.FirstName} {user.LastName}",
+                Phone = user.Phone
+            };
+        }
+
         public async Task<bool> UpdateEmail(UserEditEmailModel model)
         {
             var user = _userRepository.GetById(model.UserId);
