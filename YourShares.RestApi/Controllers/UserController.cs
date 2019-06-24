@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
 using YourShares.Application.ViewModels;
+using YourShares.RestApi.ApiResponse;
 
 namespace YourShares.RestApi.Controllers
 {
@@ -24,6 +25,22 @@ namespace YourShares.RestApi.Controllers
         public UserController(IUserService userService)
         {
             _userService = userService;
+        }
+
+        /// <summary>
+        ///     Gets User specified by its identifier.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ResponseModel<UserViewDetailModel>> GetUserById([FromRoute] Guid id)
+        {
+            var result = await _userService.GetById(id);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<UserViewDetailModel>().Success()
+                .Data(result)
+                .Count(1)
+                .build();
         }
 
         /// <summary>
