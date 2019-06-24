@@ -66,7 +66,7 @@ namespace YourShares.Data.Interfaces
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        EntityEntry<T> Update(T entity);
+        void Update(T entity);
 
         /// <summary>
         /// Updates the range.

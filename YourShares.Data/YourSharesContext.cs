@@ -31,7 +31,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.BonusShareId)
                     .HasColumnName("Bonus_Share_ID")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.AssignDate)
                     .IsRequired()
@@ -49,7 +49,7 @@ namespace YourShares.Data
             {
                 entity.Property(e => e.CompanyId)
                     .HasColumnName("Company_ID")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Address)
                     .HasMaxLength(50)
@@ -80,7 +80,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.ShareAccountId)
                     .HasColumnName("Share_Account_ID")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.ShareAmount).HasColumnName("Share_Amount");
 
@@ -93,7 +93,7 @@ namespace YourShares.Data
             {
                 entity.Property(e => e.ShareholderId)
                     .HasColumnName("Shareholder_ID")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.CompanyId).HasColumnName("Company_ID");
 
@@ -106,7 +106,7 @@ namespace YourShares.Data
             {
                 entity.Property(e => e.TransactionId)
                     .HasColumnName("Transaction_ID")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.ShareAccountId).HasColumnName("Share_Account_ID");
 
@@ -128,7 +128,7 @@ namespace YourShares.Data
             {
                 entity.Property(e => e.UserId)
                     .HasColumnName("User_ID")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Address)
                     .HasMaxLength(50)
