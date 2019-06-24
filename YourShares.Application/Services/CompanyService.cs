@@ -62,7 +62,7 @@ namespace YourShares.Application.Services
             company.Capital = model.Capital;
             company.TotalShare = model.TotalShare;
             company.OptionPollAmount = model.OptionPoll;
-            _companyRepository.Insert(company);
+            _companyRepository.Update(company);
             await _unitOfWork.CommitAsync();
             return true;
         }

@@ -75,19 +75,19 @@ namespace YourShares.Data.Repository
             return _unitOfWork.Context.Set<T>().Where(predicate).AsQueryable<T>();
         }
         
-        public EntityEntry<T> Update(T entity)
+        public void Update(T entity)
         {
+            _unitOfWork.Context.Set<T>().Attach(entity);
             _unitOfWork.Context.Entry(entity).State = EntityState.Modified;
-            return _unitOfWork.Context.Set<T>().Attach(entity);
         }
         
         public void UpdateRange(IEnumerable<T> entities)
         {
+            _unitOfWork.Context.Set<T>().AttachRange(entities);
             foreach (var item in entities)
             {
                 _unitOfWork.Context.Entry(item).State = EntityState.Modified;
             }
-            _unitOfWork.Context.Set<T>().AttachRange(entities);
         }
     }
 }
