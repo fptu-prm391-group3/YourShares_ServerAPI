@@ -364,7 +364,7 @@ namespace YourShares.Data
                 .Build();
 
             // define the database to use
-            optionsBuilder.UseSqlServer(config.GetConnectionString("LocalConnection"));
+            optionsBuilder.UseSqlServer(config.GetConnectionString("TuConnection"));
         }
     }
 }

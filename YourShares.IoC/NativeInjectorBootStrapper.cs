@@ -23,7 +23,7 @@ namespace YourShares.IoC
 
             // Application
             services.AddTransient<ICompanyService, CompanyService>();
-            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IUserProfileService, UserProfileService>();
             
             // Data- Repo
             services.AddScoped<IRepository<UserProfile>, Repository<UserProfile>>();

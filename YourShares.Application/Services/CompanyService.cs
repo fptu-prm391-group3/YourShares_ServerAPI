@@ -15,8 +15,8 @@ namespace YourShares.Application.Services
 {
     public class CompanyService : ICompanyService
     {
-        private readonly IRepository<Company> _companyRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IRepository<Company> _companyRepository;
         private readonly IRepository<UserProfile> _userRepository;
 
         public CompanyService(IUnitOfWork unitOfWork
