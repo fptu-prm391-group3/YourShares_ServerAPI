@@ -10,7 +10,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\YourShares.Application\YourShares.Application.csproj" />
-      <ProjectReference Include="..\YourShares.Identity\YourShares.Identity.csproj" />
     </ItemGroup>
 
 </Project>

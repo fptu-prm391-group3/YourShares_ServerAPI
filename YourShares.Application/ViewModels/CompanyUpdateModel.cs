@@ -14,7 +14,7 @@ namespace YourShares.Application.ViewModels
 
         public long Capital { get; set; }
 
-        public long TotalShare { get; set; }
+        public long TotalShares { get; set; }
 
         public long OptionPoll { get; set; }
     }

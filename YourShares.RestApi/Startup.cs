@@ -58,7 +58,7 @@ namespace YourShares.RestApi
         private static void RegisterServices(IServiceCollection services)
         {
             // Adding dependencies from another layers (isolated from Presentation)
-            NativeInjectorBootStrapper.RegisterServices(services);
+            NativeInjectorBootstrapper.RegisterServices(services);
         }
     }
 }

@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using YourShares.Application.Exceptions;
 using YourShares.Application.Interfaces;
 using YourShares.Application.ViewModels;
 using YourShares.Data.Interfaces;
-using YourShares.Domain.Models;
 using YourShares.Domain.Util;
+using YourShares.RestApi.Models;
 
 namespace YourShares.Application.Services
 {
     public class UserService : IUserService
     {
-        private readonly IRepository<User> _userRepository;
+        private readonly IRepository<UserProfile> _userRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public UserService(IUnitOfWork unitOfWork
-            , IRepository<User> userRepository)
+            , IRepository<UserProfile> userRepository)
         {
             _unitOfWork = unitOfWork;
             _userRepository = userRepository;
@@ -30,7 +28,7 @@ namespace YourShares.Application.Services
 
             return new UserViewDetailModel
             {
-                UserId = user.UserId,
+                UserId = user.UserProfileId,
                 Address = user.Address,
                 Email = user.Email,
                 Name = $"{user.FirstName} {user.LastName}",

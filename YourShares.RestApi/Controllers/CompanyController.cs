@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
 using YourShares.Application.SearchModels;
@@ -47,6 +48,7 @@ namespace YourShares.RestApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ResponseModel<IQueryable<CompanyViewSearchModel>>> SearchCompany(
             [FromQuery] CompanySearchModel model)
         {
