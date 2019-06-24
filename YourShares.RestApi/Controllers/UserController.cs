@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
+using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
 using YourShares.RestApi.ApiResponse;
 
@@ -32,7 +33,7 @@ namespace YourShares.RestApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("{id}")]
+        [Route("/api/user/{id}")]
         public async Task<ResponseModel<UserViewDetailModel>> GetUserById([FromRoute] Guid id)
         {
             var result = await _userService.GetById(id);
@@ -42,6 +43,25 @@ namespace YourShares.RestApi.Controllers
                 .Count(1)
                 .build();
         }
+
+        /// <summary>
+        ///     Search User by Email, Phone, Name.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/api/users")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<ResponseModel<IQueryable<UserSearchViewModel>>> SearchUser(
+            [FromQuery] UserSearchModel model)
+        {
+            var result = await _userService.SearchUser(model);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<IQueryable<UserSearchViewModel>>().Success()
+                .Data(result)
+                .Count(result.Count())
+                .build();
+        }
+
 
         /// <summary>
         ///     Updates the user infomation with details in the request body.

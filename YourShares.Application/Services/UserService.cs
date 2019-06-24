@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using YourShares.Application.Exceptions;
 using YourShares.Application.Interfaces;
+using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
 using YourShares.Data.Interfaces;
 using YourShares.Domain.Util;
@@ -34,6 +36,35 @@ namespace YourShares.Application.Services
                 Name = $"{user.FirstName} {user.LastName}",
                 Phone = user.Phone
             };
+        }
+
+        public async Task<IQueryable<UserSearchViewModel>> SearchUser(UserSearchModel model)
+        {
+            const string defaultSort = "Name ASC";
+            var sortType = model.IsSortDesc ? "DESC" : "ASC";
+            var sortField = ValidateUtils.IsNullOrEmpty(model.SortField)
+                ? defaultSort
+                : $"{model.SortField} {sortType}";
+            var query = _userRepository.GetManyAsNoTracking(x =>
+                    ValidateUtils.IsNullOrEmpty(model.Name)
+                    || x.FirstName.ToUpper().Contains(model.Name.ToUpper())
+                    && ValidateUtils.IsNullOrEmpty(model.Name)
+                    || x.LastName.ToUpper().Contains(model.Name.ToUpper())
+                    && ValidateUtils.IsNullOrEmpty(model.Phone)
+                    || x.Phone.Equals(model.Name)
+                    && ValidateUtils.IsNullOrEmpty(model.Email)
+                    || x.Email.ToUpper().Contains(model.Email.ToUpper()))
+                 .Select(x => new UserSearchViewModel
+                 {
+                     Address = x.Address,
+                     UserId = x.UserProfileId,
+                     Email = x.Email,
+                     Name = $"{x.FirstName} {x.LastName}"
+                 });
+            var result = query.Skip((model.Page - 1) * model.PageSize)
+                .Take(model.PageSize);
+            return result;
+
         }
 
         public async Task<bool> UpdateEmail(UserEditEmailModel model)
