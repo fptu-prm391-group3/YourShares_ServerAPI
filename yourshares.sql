@@ -48,7 +48,7 @@ CREATE TABLE yourshares.dbo.company (
   phone varchar(15) NULL,
   capital bigint NOT NULL,
   total_shares bigint NOT NULL,
-  option_poll_amount bigint NULL,
+  option_poll_amount bigint NOT NULL,
   CONSTRAINT PK_Company_Company_ID PRIMARY KEY CLUSTERED (company_id)
 )
 ON [PRIMARY]
@@ -159,9 +159,9 @@ INSERT INTO dbo.ref_user_account_status_code (user_account_status_code, name)
   ('USR', 'Verified user')
 
 INSERT INTO dbo.user_profile (user_profile_id, first_name, last_name, email, phone, address)
-  VALUES ('a9bdf9af-f6ff-471e-8c21-d618e2950f04', 'Tu', 'Nguyen', 'tunguyen@gmail.com', 0598643187, 'somewhere'),
-  ('54eaf8e7-7566-4c8d-a467-ee94e158d975', 'Phu', 'Cao', 'phucao@gmail.com', 0985671493, 'myhouse'),
-  ('867896ec-690c-4fff-8725-8abb3ccf59d0', 'Binh', 'Phan', 'binhphan@gmail.com', 0865974168, 'nohome')
+  VALUES ('a9bdf9af-f6ff-471e-8c21-d618e2950f04', 'Tu', 'Nguyen', 'tunguyen@gmail.com', '0598643187', 'somewhere'),
+  ('54eaf8e7-7566-4c8d-a467-ee94e158d975', 'Phu', 'Cao', 'phucao@gmail.com', '0985671493', 'myhouse'),
+  ('867896ec-690c-4fff-8725-8abb3ccf59d0', 'Binh', 'Phan', 'binhphan@gmail.com', '0865974168', 'nohome')
 
 INSERT INTO dbo.user_account (user_profile_id, email, password_hash, password_hash_algorithm, password_reminder_token, email_confirmation_token, user_account_status_code)
   VALUES ('a9bdf9af-f6ff-471e-8c21-d618e2950f04', 'tunguyen@gmail.com', 'nothashyet', 'no', DEFAULT, DEFAULT, 'USR'),
@@ -169,4 +169,4 @@ INSERT INTO dbo.user_account (user_profile_id, email, password_hash, password_ha
   ('867896ec-690c-4fff-8725-8abb3ccf59d0', 'binhphan@gmail.com', 'nothashyet', 'no', DEFAULT, DEFAULT, 'USR')
 
 INSERT INTO dbo.company (company_id, admin_profile_id, company_name, address, phone, capital, total_shares, option_poll_amount)
-  VALUES ('80699ae2-fce7-4566-8732-803f7151e73c', '54eaf8e7-7566-4c8d-a467-ee94e158d975', 'NoNameComp', 'skyhigh', 0549751369, 777777777, 10000000, DEFAULT)
+  VALUES ('80699ae2-fce7-4566-8732-803f7151e73c', '54eaf8e7-7566-4c8d-a467-ee94e158d975', 'NoNameComp', 'skyhigh', '0549751369', 777777777, 10000000, 0)

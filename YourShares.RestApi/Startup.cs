@@ -66,7 +66,7 @@ namespace YourShares.RestApi
             // app.UseHttpsRedirection();
             app.UseAuthentication();
             // use exception handle middleware
-            app.UseMiddleware(typeof(ExceptionHandleController));
+            //app.UseMiddleware(typeof(ExceptionHandleController));
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "YourShares API"); });

@@ -1,9 +1,11 @@
 ﻿﻿using System;
+ using System.Collections.Generic;
  using System.Diagnostics;
  using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
+using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
 using YourShares.RestApi.ApiResponse;
 
@@ -39,7 +41,8 @@ namespace YourShares.RestApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("{id}")]
+        [Authorize]
+        [Route("/api/user/{id}")]
         public async Task<ResponseModel<UserViewDetailModel>> GetUserById([FromRoute] Guid id)
         {
             var result = await _userProfileService.GetById(id);
@@ -49,6 +52,25 @@ namespace YourShares.RestApi.Controllers
                 .Count(1)
                 .build();
         }
+
+        /// <summary>
+        ///     Search User by Email, Phone, Name.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize]
+        [Route("/api/users")]
+        public async Task<ResponseModel<List<UserSearchViewModel>>> SearchUser(
+            [FromQuery] UserSearchModel model)
+        {
+            var result = await _userProfileService.SearchUser(model);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<List<UserSearchViewModel>>().Success()
+                .Data(result)
+                .Count(result.Count)
+                .build();
+        }
+
 
         /// <summary>
         ///     Updates the user information with details in the request body.
@@ -69,6 +91,7 @@ namespace YourShares.RestApi.Controllers
         /// <param name="model">The UserEditEmailModel.</param>
         /// <returns></returns>
         [HttpPut]
+        [Authorize]
         [Route("/api/user/email")]
         public async Task UpdateInfo([FromBody] UserEditEmailModel model)
         {
@@ -76,30 +99,40 @@ namespace YourShares.RestApi.Controllers
             Response.StatusCode = (int)HttpStatusCode.OK;
         }
 
+        /// <summary>
+        /// Register a user account in system.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
-        public async Task Register([FromBody]UserCreateModel model) 
+        public async Task Register([FromBody]UserCreateViewModel model)
         {
-            
+            await _userProfileService.CreateUserProfile(new UserProfileCreateModel
+            {
+                Email = model.Email,
+                Phone = model.Phone,
+                Address = model.Address,
+                LastName = model.LastName,
+                FirstName = model.FirstName
+            }, new UserAccountCreateModel
+            {
+                Email = model.Email,
+                Password = model.Password
+            });
         }
         
+        /// <summary>
+        /// Login to system with a system account.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
         [Route("auth")]
-        public async Task<string> LoginWithEmail([FromBody]UserCreateModel model)
+        public async Task<string> LoginWithEmail([FromBody]UserCreateViewModel model)
         {
-            Trace.WriteLine($"Logging in as {model.Email} and {model.Password}");
-            var users = await _userProfileService.SearchUserByEmail(model.Email, 1);
-            UserViewModel user;
-            if (users.Count > 0)
-            {
-                user = users[0];
-            }
-            else
-            {
-                Response.StatusCode = (int) HttpStatusCode.NotFound;
-                return "NOTFOUND";
-            }
+            var user = await _userProfileService.GetUserByEmail(model.Email);
             if (model.Password == user.PasswordHash)
             {
                 var token = BuildToken(user);
@@ -109,16 +142,16 @@ namespace YourShares.RestApi.Controllers
             }
 
             Response.StatusCode = (int) HttpStatusCode.BadRequest;
-            return "Wrong pass";
+            return null;
         }
         
-        private string BuildToken(UserViewModel validLoginUser)
+        private string BuildToken(UserLoginViewModel validLoginUserLogin)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, validLoginUser.UserProfileId.ToString())
+                new Claim(JwtRegisteredClaimNames.Sub, validLoginUserLogin.UserProfileId.ToString())
             };
 
             var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],

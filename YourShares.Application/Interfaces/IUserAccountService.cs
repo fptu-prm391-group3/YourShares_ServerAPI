@@ -9,6 +9,6 @@ namespace YourShares.Application.Interfaces
     {
         Task<UserAccount> GetById(Guid id);
 
-        Task<UserAccount> CreateUserAccount(UserCreateModel model);
+        Task<bool> CreateUserAccount(UserAccountCreateModel model, Guid userProfileId);
     }
 }

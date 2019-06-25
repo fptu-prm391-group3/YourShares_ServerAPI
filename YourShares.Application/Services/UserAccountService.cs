@@ -5,16 +5,18 @@ using YourShares.Application.Interfaces;
 using YourShares.Application.ViewModels;
 using YourShares.Data.Interfaces;
 using YourShares.Data.UoW;
+using YourShares.Domain.Models;
+using YourShares.Domain.Util;
 using YourShares.RestApi.Models;
 
 namespace YourShares.Application.Services
 {
     public class UserAccountService : IUserAccountService
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<UserAccount> _userAccountRepository;
 
-        public UserAccountService(IRepository<UserAccount> userAccountRepository, UnitOfWork unitOfWork)
+        public UserAccountService(IRepository<UserAccount> userAccountRepository, IUnitOfWork unitOfWork)
         {
             _userAccountRepository = userAccountRepository;
             _unitOfWork = unitOfWork;
@@ -27,9 +29,21 @@ namespace YourShares.Application.Services
             return result;
         }
 
-        public Task<UserAccount> CreateUserAccount(UserCreateModel model)
+        public async Task<bool> CreateUserAccount(UserAccountCreateModel model, Guid userProfileId)
         {
-            throw new NotImplementedException();
+            if (!ValidateUtils.IsMail(model.Email)) throw new MalformedEmailException();
+            if (model.Password.Length < 8) throw new FormatException("Password invalid");
+            _userAccountRepository.Insert(new UserAccount
+            {
+                Email = model.Email,
+                PasswordHash = model.Password,
+                // TODO Hash password
+                PasswordHashAlgorithm = "HASH",
+                UserProfileId = userProfileId,
+                UserAccountStatusCode = RefUserAccountStatusCode.GUEST
+            });
+            await _unitOfWork.CommitAsync();
+            return true;
         }
     }
 }

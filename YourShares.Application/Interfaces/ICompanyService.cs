@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
@@ -13,7 +13,7 @@ namespace YourShares.Application.Interfaces
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
-        Task<IQueryable<CompanyViewSearchModel>> SearchCompany(CompanySearchModel model);
+        Task<List<CompanyViewSearchModel>> SearchCompany(CompanySearchModel model);
 
         /// <summary>
         ///     Create the specified model.

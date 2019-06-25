@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -30,9 +31,12 @@ namespace YourShares.Application.Services
 
         public async Task<CompanyViewModel> CreateCompany(CompanyCreateModel model)
         {
+            //TODO Generate current user Login
+            var currentUserId = Guid.Parse("54eaf8e7-7566-4c8d-a467-ee94e158d975");
+
             var company = new Company
             {
-                AdminProfileId = Guid.Parse(model.AdminUserId),
+                AdminProfileId = currentUserId,
                 CompanyName = model.CompanyName,
                 Address = model.Address,
                 Phone = model.Phone,
@@ -40,23 +44,25 @@ namespace YourShares.Application.Services
                 TotalShares = model.TotalShares,
                 OptionPollAmount = model.OptionPoll
             };
-            _companyRepository.Insert(company);
+            var newComany = _companyRepository.Insert(company);
             await _unitOfWork.CommitAsync();
             return new CompanyViewModel
             {
-                AdminUserId = Guid.Parse(model.AdminUserId),
-                CompanyName = model.CompanyName,
-                Address = model.Address,
-                Phone = model.Phone,
-                Capital = model.Capital,
-                TotalShares = model.TotalShares,
-                OptionPoll = model.OptionPoll
+                Id = newComany.Entity.CompanyId,
+                AdminUserId = newComany.Entity.AdminProfileId,
+                CompanyName = newComany.Entity.CompanyName,
+                Address = newComany.Entity.Address,
+                Phone = newComany.Entity.Phone,
+                Capital = newComany.Entity.Capital,
+                TotalShares = newComany.Entity.TotalShares,
+                OptionPoll = newComany.Entity.OptionPollAmount
             };
         }
 
         public async Task<bool> UpdateCompany(CompanyUpdateModel model)
         {
             var company = _companyRepository.GetById(model.CompanyId);
+            if (company == null) throw new EntityNotFoundException($"Company id {model.CompanyId} not found");
             company.CompanyName = model.CompanyName;
             company.Address = model.Address;
             company.Phone = model.Phone;
@@ -68,40 +74,34 @@ namespace YourShares.Application.Services
             return true;
         }
 
-        public async Task<IQueryable<CompanyViewSearchModel>> SearchCompany(CompanySearchModel model)
+        public async Task<List<CompanyViewSearchModel>> SearchCompany(CompanySearchModel model)
         {
+            //TODO Generate current user Login
+            var currentUserId = Guid.Parse("54eaf8e7-7566-4c8d-a467-ee94e158d975");
+
+
             const string defaultSort = "CompanyName ASC";
             var sortType = model.IsSortDesc ? "DESC" : "ASC";
             var sortField = ValidateUtils.IsNullOrEmpty(model.SortField)
                 ? defaultSort
                 : $"{model.SortField} {sortType}";
-            var query = _userRepository.GetManyAsNoTracking(x =>
-                    ValidateUtils.IsNullOrEmpty(model.AdminEmail) || x.Email == model.AdminEmail)
-                .Select(x => new
+            var query = _companyRepository.GetManyAsNoTracking(x =>
+                    (ValidateUtils.IsNullOrEmpty(model.CompanyName)
+                    || x.CompanyName.ToUpper().Contains(model.CompanyName.ToUpper()))
+                    && x.AdminProfileId == currentUserId
+                ).Select(x => new CompanyViewSearchModel
                 {
-                    x.UserProfileId,
-                    x.Email
-                })
-                .Join(_companyRepository.GetManyAsNoTracking(x =>
-                    (ValidateUtils.IsNullOrEmpty(model.Address) ||
-                     x.Address.ToUpper().Contains(model.AdminEmail.ToUpper()))
-                    && (model.Capital <= 0 || x.Capital == model.Capital)
-                    && (ValidateUtils.IsNullOrEmpty(model.CompanyName) ||
-                        x.CompanyName.ToUpper().Contains(model.CompanyName.ToUpper()))
-                ), x => x.UserProfileId, y => y.AdminProfileId, (x, y) => new CompanyViewSearchModel
-                {
-                    AdminEmail = x.Email,
-                    Address = y.Address,
-                    Phone = y.Phone,
-                    Capital = y.Capital,
-                    CompanyId = y.CompanyId,
-                    CompanyName = y.CompanyName,
-                    OptionPoll = y.OptionPollAmount,
-                    TotalShares = y.TotalShares
+                    Address = x.Address,
+                    Phone = x.Phone,
+                    Capital = x.Capital,
+                    CompanyId = x.CompanyId,
+                    CompanyName = x.CompanyName,
+                    OptionPoll = x.OptionPollAmount,
+                    TotalShares = x.TotalShares,
                 }).OrderBy(sortField);
             var result = query.Skip((model.Page - 1) * model.PageSize)
                 .Take(model.PageSize);
-            return result;
+            return result.ToList();
         }
 
         public async Task<CompanyViewModel> GetById(Guid id)

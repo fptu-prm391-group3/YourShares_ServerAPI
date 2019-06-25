@@ -2,7 +2,7 @@ using System;
 
 namespace YourShares.Application.ViewModels
 {
-    public class UserViewModel
+    public class UserLoginViewModel
     {
         public Guid UserProfileId { get; set; }
         public string Email { get; set; }

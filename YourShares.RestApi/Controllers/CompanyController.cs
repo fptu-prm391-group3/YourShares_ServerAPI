@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +34,7 @@ namespace YourShares.RestApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize]
         [Route("{id}")]
         public async Task<ResponseModel<CompanyViewModel>> GetCompanyById([FromRoute] Guid id)
         {
@@ -44,19 +47,19 @@ namespace YourShares.RestApi.Controllers
         }
 
         /// <summary>
-        ///     Search company by Admin, CompanyName, Address, Capital.
+        ///     Search company by CompanyName.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public async Task<ResponseModel<IQueryable<CompanyViewSearchModel>>> SearchCompany(
+        //[Authorize(Roles = "Admin")]
+        public async Task<ResponseModel<List<CompanyViewSearchModel>>> SearchCompany(
             [FromQuery] CompanySearchModel model)
         {
             var result = await _companyService.SearchCompany(model);
             Response.StatusCode = (int) HttpStatusCode.OK;
-            return new ResponseBuilder<IQueryable<CompanyViewSearchModel>>().Success()
+            return new ResponseBuilder<List<CompanyViewSearchModel>>().Success()
                 .Data(result)
-                .Count(result.Count())
+                .Count(result.Count)
                 .build();
         }
 
@@ -81,6 +84,7 @@ namespace YourShares.RestApi.Controllers
         /// <param name="model">The model.</param>
         /// <returns></returns>
         [HttpPut]
+        [Authorize]
         public async Task UpdateCompany([FromBody] CompanyUpdateModel model)
         {
             await _companyService.UpdateCompany(model);
