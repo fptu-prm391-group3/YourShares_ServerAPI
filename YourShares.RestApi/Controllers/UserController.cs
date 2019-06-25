@@ -1,14 +1,12 @@
-﻿﻿using System;
- using System.Collections.Generic;
- using System.Diagnostics;
- using System.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
 using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
 using YourShares.RestApi.ApiResponse;
-
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -21,10 +19,12 @@ namespace YourShares.RestApi.Controllers
     [ApiController]
     [Route("/api/users")]
     [Produces("application/json")]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserProfileService _userProfileService;
         private readonly IConfiguration _configuration;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="UserController" /> class.
         /// </summary>
@@ -41,12 +41,11 @@ namespace YourShares.RestApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize]
         [Route("/api/user/{id}")]
         public async Task<ResponseModel<UserViewDetailModel>> GetUserById([FromRoute] Guid id)
         {
             var result = await _userProfileService.GetById(id);
-            Response.StatusCode = (int)HttpStatusCode.OK;
+            Response.StatusCode = (int) HttpStatusCode.OK;
             return new ResponseBuilder<UserViewDetailModel>().Success()
                 .Data(result)
                 .Count(1)
@@ -58,13 +57,12 @@ namespace YourShares.RestApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize]
         [Route("/api/users")]
         public async Task<ResponseModel<List<UserSearchViewModel>>> SearchUser(
             [FromQuery] UserSearchModel model)
         {
             var result = await _userProfileService.SearchUser(model);
-            Response.StatusCode = (int)HttpStatusCode.OK;
+            Response.StatusCode = (int) HttpStatusCode.OK;
             return new ResponseBuilder<List<UserSearchViewModel>>().Success()
                 .Data(result)
                 .Count(result.Count)
@@ -82,7 +80,7 @@ namespace YourShares.RestApi.Controllers
         public async Task UpdateInfo([FromBody] UserEditInfoModel model)
         {
             await _userProfileService.UpdateInfo(model);
-            Response.StatusCode = (int)HttpStatusCode.OK;
+            Response.StatusCode = (int) HttpStatusCode.OK;
         }
 
         /// <summary>
@@ -91,12 +89,11 @@ namespace YourShares.RestApi.Controllers
         /// <param name="model">The UserEditEmailModel.</param>
         /// <returns></returns>
         [HttpPut]
-        [Authorize]
         [Route("/api/user/email")]
         public async Task UpdateInfo([FromBody] UserEditEmailModel model)
         {
             await _userProfileService.UpdateEmail(model);
-            Response.StatusCode = (int)HttpStatusCode.OK;
+            Response.StatusCode = (int) HttpStatusCode.OK;
         }
 
         /// <summary>
@@ -106,7 +103,7 @@ namespace YourShares.RestApi.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
-        public async Task Register([FromBody]UserCreateViewModel model)
+        public async Task Register([FromBody] UserCreateViewModel model)
         {
             await _userProfileService.CreateUserProfile(new UserProfileCreateModel
             {
@@ -121,7 +118,7 @@ namespace YourShares.RestApi.Controllers
                 Password = model.Password
             });
         }
-        
+
         /// <summary>
         /// Login to system with a system account.
         /// </summary>
@@ -130,21 +127,24 @@ namespace YourShares.RestApi.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("auth")]
-        public async Task<string> LoginWithEmail([FromBody]UserCreateViewModel model)
+        public async Task<UserLoginTokenModel> LoginWithEmail([FromBody] UserLoginModel model)
         {
             var user = await _userProfileService.GetUserByEmail(model.Email);
             if (model.Password == user.PasswordHash)
             {
+                Response.StatusCode = (int) HttpStatusCode.OK;
                 var token = BuildToken(user);
-                Console.WriteLine(user.Email);
-                Console.WriteLine(user.PasswordHash);
-                return $"{{\"jwt\":\"{token}\"}}";
+                return new UserLoginTokenModel
+                {
+                    UserId = user.UserProfileId.ToString(),
+                    Jwt = token
+                };
             }
 
             Response.StatusCode = (int) HttpStatusCode.BadRequest;
             return null;
         }
-        
+
         private string BuildToken(UserLoginViewModel validLoginUserLogin)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
