@@ -13,14 +13,14 @@ namespace YourShares.Application.Interfaces
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
-        Task<List<CompanyViewSearchModel>> SearchCompany(CompanySearchModel model);
+        Task<List<CompanyViewSearchModel>> SearchCompany(string userId, CompanySearchModel model);
 
         /// <summary>
         ///     Create the specified model.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
-        Task<CompanyViewModel> CreateCompany(CompanyCreateModel model);
+        Task<CompanyViewModel> CreateCompany(string userId, CompanyCreateModel model);
 
         /// <summary>
         ///     Update the company information.

@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,7 +56,8 @@ namespace YourShares.RestApi.Controllers
         public async Task<ResponseModel<List<CompanyViewSearchModel>>> SearchCompany(
             [FromQuery] CompanySearchModel model)
         {
-            var result = await _companyService.SearchCompany(model);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _companyService.SearchCompany(userId, model);
             Response.StatusCode = (int) HttpStatusCode.OK;
             return new ResponseBuilder<List<CompanyViewSearchModel>>().Success()
                 .Data(result)
@@ -68,7 +73,8 @@ namespace YourShares.RestApi.Controllers
         [HttpPost]
         public async Task<ResponseModel<CompanyViewModel>> CreateCompany([FromBody] CompanyCreateModel model)
         {
-            var createdResult = await _companyService.CreateCompany(model);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var createdResult = await _companyService.CreateCompany(userId, model);
             Response.StatusCode = (int) HttpStatusCode.Created;
             return new ResponseBuilder<CompanyViewModel>().Success()
                 .Data(createdResult)

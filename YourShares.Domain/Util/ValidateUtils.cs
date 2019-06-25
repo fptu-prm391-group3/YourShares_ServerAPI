@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace YourShares.Domain.Util
 {
@@ -16,6 +17,7 @@ namespace YourShares.Domain.Util
             {
                 return true;
             }
+
             return false;
         }
 
@@ -38,6 +40,12 @@ namespace YourShares.Domain.Util
             {
                 return false;
             }
+        }
+
+        public static bool IsPhone(string phone)
+        {
+            Regex regex = new Regex(@"^(\+)?[0-9]{8,12}$");
+            return regex.IsMatch(phone);
         }
     }
 }
