@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Mail;
 
 namespace YourShares.Domain.Util
 {
@@ -16,6 +17,27 @@ namespace YourShares.Domain.Util
                 return true;
             }
             return false;
+        }
+
+        public static bool IsNumber(String data)
+        {
+            long check = 0;
+            bool isNumber = long.TryParse(data, out check);
+            return isNumber;
+        }
+
+        public static bool IsMail(string emailaddress)
+        {
+            try
+            {
+                MailAddress m = new MailAddress(emailaddress);
+
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
         }
     }
 }

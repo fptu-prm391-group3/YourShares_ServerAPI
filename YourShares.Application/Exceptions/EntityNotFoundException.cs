@@ -11,7 +11,5 @@ namespace YourShares.Application.Exceptions
         public EntityNotFoundException(string message) : base(message)
         {
         }
-        
-        
     }
 }
