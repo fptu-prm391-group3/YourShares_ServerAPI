@@ -65,8 +65,8 @@ namespace YourShares.Application.Services
         public async Task<bool> CreateUserProfile(UserProfileCreateModel profileModel
             , UserAccountCreateModel accountModel)
         {
-            if (!ValidateUtils.IsMail(profileModel.Email)) throw new MalformedEmailException();
-            // TODO check phone
+            if (!ValidateUtils.IsMail(profileModel.Email)) throw new FormatException("Email address invalid");
+            if (!ValidateUtils.IsPhone(profileModel.Phone)) throw new FormatException("Phone number invalid");
             var userProfile = _userProfileRepository.Insert(new UserProfile
             {
                 Email = profileModel.Email,

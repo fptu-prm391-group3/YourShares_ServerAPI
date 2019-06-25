@@ -29,14 +29,12 @@ namespace YourShares.Application.Services
             _userRepository = userRepository;
         }
 
-        public async Task<CompanyViewModel> CreateCompany(CompanyCreateModel model)
+        public async Task<CompanyViewModel> CreateCompany(string userId, CompanyCreateModel model)
         {
-            //TODO Generate current user Login
-            var currentUserId = Guid.Parse("54eaf8e7-7566-4c8d-a467-ee94e158d975");
-
+            if (ValidateUtils.IsNullOrEmpty(userId)) throw new UnauthorizedUser("User id is invalid");
             var company = new Company
             {
-                AdminProfileId = currentUserId,
+                AdminProfileId = Guid.Parse(userId),
                 CompanyName = model.CompanyName,
                 Address = model.Address,
                 Phone = model.Phone,
@@ -44,23 +42,24 @@ namespace YourShares.Application.Services
                 TotalShares = model.TotalShares,
                 OptionPollAmount = model.OptionPoll
             };
-            var newComany = _companyRepository.Insert(company);
+            var newCompany = _companyRepository.Insert(company);
             await _unitOfWork.CommitAsync();
             return new CompanyViewModel
             {
-                Id = newComany.Entity.CompanyId,
-                AdminUserId = newComany.Entity.AdminProfileId,
-                CompanyName = newComany.Entity.CompanyName,
-                Address = newComany.Entity.Address,
-                Phone = newComany.Entity.Phone,
-                Capital = newComany.Entity.Capital,
-                TotalShares = newComany.Entity.TotalShares,
-                OptionPoll = newComany.Entity.OptionPollAmount
+                Id = newCompany.Entity.CompanyId,
+                AdminUserId = newCompany.Entity.AdminProfileId,
+                CompanyName = newCompany.Entity.CompanyName,
+                Address = newCompany.Entity.Address,
+                Phone = newCompany.Entity.Phone,
+                Capital = newCompany.Entity.Capital,
+                TotalShares = newCompany.Entity.TotalShares,
+                OptionPoll = newCompany.Entity.OptionPollAmount
             };
         }
 
         public async Task<bool> UpdateCompany(CompanyUpdateModel model)
         {
+            // TODO check editable permission with user id
             var company = _companyRepository.GetById(model.CompanyId);
             if (company == null) throw new EntityNotFoundException($"Company id {model.CompanyId} not found");
             company.CompanyName = model.CompanyName;
@@ -74,12 +73,9 @@ namespace YourShares.Application.Services
             return true;
         }
 
-        public async Task<List<CompanyViewSearchModel>> SearchCompany(CompanySearchModel model)
+        public async Task<List<CompanyViewSearchModel>> SearchCompany(string userId, CompanySearchModel model)
         {
-            //TODO Generate current user Login
-            var currentUserId = Guid.Parse("54eaf8e7-7566-4c8d-a467-ee94e158d975");
-
-
+            if (ValidateUtils.IsNullOrEmpty(userId)) throw new UnauthorizedUser("User id is invalid");
             const string defaultSort = "CompanyName ASC";
             var sortType = model.IsSortDesc ? "DESC" : "ASC";
             var sortField = ValidateUtils.IsNullOrEmpty(model.SortField)
@@ -88,7 +84,7 @@ namespace YourShares.Application.Services
             var query = _companyRepository.GetManyAsNoTracking(x =>
                     (ValidateUtils.IsNullOrEmpty(model.CompanyName)
                     || x.CompanyName.ToUpper().Contains(model.CompanyName.ToUpper()))
-                    && x.AdminProfileId == currentUserId
+                    && x.AdminProfileId == Guid.Parse(userId)
                 ).Select(x => new CompanyViewSearchModel
                 {
                     Address = x.Address,

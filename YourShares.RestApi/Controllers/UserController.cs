@@ -28,7 +28,8 @@ namespace YourShares.RestApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="UserController" /> class.
         /// </summary>
-        /// <typeparam name="userProfileService">The type of the service.</typeparam>
+        /// <param name="userProfileService">The User profile service.</param>
+        /// <param name="configuration">Configuration from appsettings.json</param>
         /// <returns></returns>
         public UserController(IUserProfileService userProfileService, IConfiguration configuration)
         {
@@ -151,7 +152,8 @@ namespace YourShares.RestApi.Controllers
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, validLoginUserLogin.UserProfileId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, validLoginUserLogin.UserProfileId.ToString()),
+                new Claim(ClaimTypes.Email, validLoginUserLogin.Email) 
             };
 
             var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
