@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +14,7 @@ namespace YourShares.RestApi.Controllers
     [ApiController]
     [Route("/api/companies")]
     [Produces("application/json")]
+    [Authorize]
     public class CompanyController : ControllerBase
     {
         private readonly ICompanyService _companyService;
@@ -34,7 +33,6 @@ namespace YourShares.RestApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize]
         [Route("{id}")]
         public async Task<ResponseModel<CompanyViewModel>> GetCompanyById([FromRoute] Guid id)
         {
@@ -51,7 +49,6 @@ namespace YourShares.RestApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
         public async Task<ResponseModel<List<CompanyViewSearchModel>>> SearchCompany(
             [FromQuery] CompanySearchModel model)
         {
@@ -84,7 +81,6 @@ namespace YourShares.RestApi.Controllers
         /// <param name="model">The model.</param>
         /// <returns></returns>
         [HttpPut]
-        [Authorize]
         public async Task UpdateCompany([FromBody] CompanyUpdateModel model)
         {
             await _companyService.UpdateCompany(model);
