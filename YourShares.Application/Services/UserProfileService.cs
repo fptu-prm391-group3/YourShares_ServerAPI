@@ -49,7 +49,7 @@ namespace YourShares.Application.Services
         public async Task<UserLoginViewModel> GetUserByEmail(string email)
         {
             var profile = _userProfileRepository.GetManyAsNoTracking(x => email.Equals(x.Email)).FirstOrDefault();
-            if (profile == null) throw new EntityNotFoundException("User Profile not found"); 
+            if (profile == null) throw new EntityNotFoundException("User Profile not found");
             var result = _userAccountRepository.GetManyAsNoTracking(y => y.UserProfileId.Equals(profile.UserProfileId))
                 .FirstOrDefault();
             if (result == null) throw new EntityNotFoundException("User Account not found. Try query in Google account");
@@ -58,7 +58,9 @@ namespace YourShares.Application.Services
                 UserProfileId = result.UserProfileId,
                 Email = result.Email,
                 PasswordHash = result.PasswordHash,
-                PasswordHashAlgorithm = result.PasswordHashAlgorithm
+                PasswordHashAlgorithm = result.PasswordHashAlgorithm,
+                PasswordSon = result.PasswordSalt
+
             };
         }
 
@@ -67,6 +69,9 @@ namespace YourShares.Application.Services
         {
             if (!ValidateUtils.IsMail(profileModel.Email)) throw new FormatException("Email address invalid");
             if (!ValidateUtils.IsPhone(profileModel.Phone)) throw new FormatException("Phone number invalid");
+
+            var query = _userProfileRepository.GetManyAsNoTracking(x => x.Email.Equals(profileModel.Email));
+            if(query.ToList().Count!=0) throw new FormatException("Email Exited");
             var userProfile = _userProfileRepository.Insert(new UserProfile
             {
                 Email = profileModel.Email,

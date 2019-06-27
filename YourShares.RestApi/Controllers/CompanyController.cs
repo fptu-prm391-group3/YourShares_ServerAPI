@@ -41,7 +41,7 @@ namespace YourShares.RestApi.Controllers
         public async Task<ResponseModel<CompanyViewModel>> GetCompanyById([FromRoute] Guid id)
         {
             var result = await _companyService.GetById(id);
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
             return new ResponseBuilder<CompanyViewModel>().Success()
                 .Data(result)
                 .Count(1)
@@ -58,7 +58,7 @@ namespace YourShares.RestApi.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var result = await _companyService.SearchCompany(userId, model);
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
             return new ResponseBuilder<List<CompanyViewSearchModel>>().Success()
                 .Data(result)
                 .Count(result.Count)
@@ -75,7 +75,7 @@ namespace YourShares.RestApi.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var createdResult = await _companyService.CreateCompany(userId, model);
-            Response.StatusCode = (int) HttpStatusCode.Created;
+            Response.StatusCode = (int)HttpStatusCode.Created;
             return new ResponseBuilder<CompanyViewModel>().Success()
                 .Data(createdResult)
                 .build();
@@ -90,7 +90,7 @@ namespace YourShares.RestApi.Controllers
         public async Task UpdateCompany([FromBody] CompanyUpdateModel model)
         {
             await _companyService.UpdateCompany(model);
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
         }
 
 
@@ -103,7 +103,7 @@ namespace YourShares.RestApi.Controllers
         public async Task DeleteCompanyById([FromRoute] Guid id)
         {
             await _companyService.DeleteById(id);
-            Response.StatusCode = (int) HttpStatusCode.Accepted;
+            Response.StatusCode = (int)HttpStatusCode.Accepted;
         }
     }
 }

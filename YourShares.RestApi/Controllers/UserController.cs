@@ -13,6 +13,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using YourShares.Domain.Util;
 
 namespace YourShares.RestApi.Controllers
 {
@@ -46,7 +47,7 @@ namespace YourShares.RestApi.Controllers
         public async Task<ResponseModel<UserViewDetailModel>> GetUserById([FromRoute] Guid id)
         {
             var result = await _userProfileService.GetById(id);
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
             return new ResponseBuilder<UserViewDetailModel>().Success()
                 .Data(result)
                 .Count(1)
@@ -63,7 +64,7 @@ namespace YourShares.RestApi.Controllers
             [FromQuery] UserSearchModel model)
         {
             var result = await _userProfileService.SearchUser(model);
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
             return new ResponseBuilder<List<UserSearchViewModel>>().Success()
                 .Data(result)
                 .Count(result.Count)
@@ -81,7 +82,7 @@ namespace YourShares.RestApi.Controllers
         public async Task UpdateInfo([FromBody] UserEditInfoModel model)
         {
             await _userProfileService.UpdateInfo(model);
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
         }
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace YourShares.RestApi.Controllers
         public async Task UpdateInfo([FromBody] UserEditEmailModel model)
         {
             await _userProfileService.UpdateEmail(model);
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
         }
 
         /// <summary>
@@ -131,9 +132,9 @@ namespace YourShares.RestApi.Controllers
         public async Task<UserLoginTokenModel> LoginWithEmail([FromBody] UserLoginModel model)
         {
             var user = await _userProfileService.GetUserByEmail(model.Email);
-            if (model.Password == user.PasswordHash)
+            if (HashingUtils.HashString(model.Password + user.PasswordSon, user.PasswordHashAlgorithm) == user.PasswordHash)
             {
-                Response.StatusCode = (int) HttpStatusCode.OK;
+                Response.StatusCode = (int)HttpStatusCode.OK;
                 var token = BuildToken(user);
                 return new UserLoginTokenModel
                 {
@@ -142,7 +143,7 @@ namespace YourShares.RestApi.Controllers
                 };
             }
 
-            Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return null;
         }
 
@@ -153,7 +154,7 @@ namespace YourShares.RestApi.Controllers
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, validLoginUserLogin.UserProfileId.ToString()),
-                new Claim(ClaimTypes.Email, validLoginUserLogin.Email) 
+                new Claim(ClaimTypes.Email, validLoginUserLogin.Email)
             };
 
             var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
