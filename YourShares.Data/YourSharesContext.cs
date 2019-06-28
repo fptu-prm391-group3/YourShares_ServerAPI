@@ -308,10 +308,8 @@ namespace YourShares.Data
                     .HasMaxLength(10)
                     .IsUnicode(false);
 
-                entity.Property(e => e.PasswordReminderToken)
-                    .HasColumnName("password_reminder_token")
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.PasswordSalt)
+                    .HasColumnName("password_salt");
 
                 entity.Property(e => e.UserAccountStatusCode)
                     .IsRequired()

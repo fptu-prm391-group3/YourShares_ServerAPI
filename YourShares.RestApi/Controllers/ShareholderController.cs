@@ -1,17 +1,30 @@
+using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using YourShares.Application.Interfaces;
+using YourShares.Application.SearchModels;
+using YourShares.Application.ViewModels;
 using YourShares.Domain.Models;
+using YourShares.RestApi.ApiResponse;
 
 namespace YourShares.RestApi.Controllers
 {
     [ApiController]
     [Route("api/shareholders")]
     [Produces("application/json")]
-    [Authorize(Roles = "Deochoaivao")]
+    [Authorize]
     public class ShareholderController : ControllerBase
     {
+        private readonly IShareholderService _shareholderService;
+
+        public ShareholderController(IShareholderService shareholderService)
+        {
+            _shareholderService = shareholderService;
+        }
         /// <summary>
         /// Find shareholder specified by its id
         /// </summary>
@@ -19,9 +32,9 @@ namespace YourShares.RestApi.Controllers
         /// <returns></returns>
         [Route("{id}")]
         [HttpGet]
-        public Task<Shareholder> GetShareholderById([FromRoute] string id)
+        public async Task<ShareholderSearchViewModel> GetShareholderById([FromRoute] Guid id)
         {
-            return null;
+            return await _shareholderService.GetById(id);
         }
         
         /// <summary>
@@ -30,9 +43,14 @@ namespace YourShares.RestApi.Controllers
         /// <param name="shareholder"></param>
         /// <returns></returns>
         [HttpGet]
-        public Task<List<Shareholder>> SearchShareholder([FromBody] string shareholder)
+        public async Task<ResponseModel<List<ShareholderSearchViewModel>>> SearchShareholder([FromQuery] ShareholderSearchModel model)
         {
-            return null;
+            var result = await _shareholderService.SearchShareholder(model);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<List<ShareholderSearchViewModel>>().Success()
+                .Data(result)
+                .Count(result.Count)
+                .build();
         }
 
         /// <summary>
@@ -41,9 +59,10 @@ namespace YourShares.RestApi.Controllers
         /// <param name="shareholder"></param>
         /// <returns></returns>
         [HttpPost]
-        public Task AddUserAsShareholder([FromBody] string shareholder, string company)
+        public async Task<bool> AddUserAsShareholder([FromBody] ShareHolderAddUserModel model)
         {
-            return null;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return await _shareholderService.AddUserAsShareHolder(model, userId);
         }
 
         /// <summary>
