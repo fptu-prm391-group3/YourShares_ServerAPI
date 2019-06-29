@@ -10,7 +10,6 @@ using YourShares.Application.ViewModels;
 using YourShares.Data.Interfaces;
 using YourShares.Domain.Models;
 using YourShares.Domain.Util;
-using YourShares.RestApi.Models;
 using System.Linq.Dynamic.Core;
 using Microsoft.EntityFrameworkCore.Internal;
 
@@ -40,7 +39,7 @@ namespace YourShares.Application.Services
             var shareholder = new Shareholder
             {
                 CompanyId = model.CompanyId,
-                UserId = model.UserId,
+                UserProfileId = model.UserId,
                 ShareholderTypeCode = model.ShareholderType,
             };
             _shareholdertRepository.Insert(shareholder);
@@ -54,7 +53,7 @@ namespace YourShares.Application.Services
             if (result == null) throw new EntityNotFoundException($"shareholder id {id} not found");
             var query = _shareholdertRepository.GetManyAsNoTracking(x => x.ShareholderId == id)
                 .Join(_userProfileRepository.GetAllAsNoTracking(),
-                x => x.UserId, y => y.UserProfileId, (x, y) => new ShareholderSearchViewModel
+                x => x.UserProfileId, y => y.UserProfileId, (x, y) => new ShareholderSearchViewModel
                 {
                     Email=y.Email,
                     Id=x.ShareholderId,
@@ -82,7 +81,7 @@ namespace YourShares.Application.Services
                     x.Email
                 })
                 .Join(_shareholdertRepository.GetAllAsNoTracking(),
-                x => x.UserProfileId, y => y.UserId, (x, y) => new ShareholderSearchViewModel
+                x => x.UserProfileId, y => y.UserProfileId, (x, y) => new ShareholderSearchViewModel
                 {
                     Id = y.ShareholderId,
                     Email = x.Email,

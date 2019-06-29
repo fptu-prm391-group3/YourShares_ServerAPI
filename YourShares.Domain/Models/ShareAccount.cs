@@ -8,5 +8,7 @@ namespace YourShares.Domain.Models
         public Guid ShareholderId { get; set; }
         public long ShareAmount { get; set; }
         public string ShareTypeCode { get; set; }
+
+        public virtual RefShareTypeCode ShareTypeCodeNavigation { get; set; }
     }
 }

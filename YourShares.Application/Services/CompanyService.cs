@@ -10,7 +10,6 @@ using YourShares.Application.ViewModels;
 using YourShares.Data.Interfaces;
 using YourShares.Domain.Models;
 using YourShares.Domain.Util;
-using YourShares.RestApi.Models;
 
 namespace YourShares.Application.Services
 {
