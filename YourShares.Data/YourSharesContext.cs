@@ -197,8 +197,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.AssignDate)
                     .IsRequired()
-                    .HasColumnName("assign_date")
-                    .IsRowVersion();
+                    .HasColumnName("assign_date");
 
                 entity.Property(e => e.ConvertibleRatio).HasColumnName("convertible_ratio");
 

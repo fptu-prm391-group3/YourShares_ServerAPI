@@ -42,5 +42,9 @@ namespace YourShares.Application.Interfaces
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
         Task<bool> DeleteById(Guid id);
+
+        Task<bool> IncreaseOptionPool(CompanyIncreaseOptionPoolMode model);
+
+        Task AddOptionPoolToSharesholder(CompanyAddOptionPoolToShareholderModel model,Guid companyId,Guid shareholderId);
     }
 }
