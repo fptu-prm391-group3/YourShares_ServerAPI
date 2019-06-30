@@ -21,10 +21,18 @@ namespace YourShares.RestApi.Controllers
     {
         private readonly IShareholderService _shareholderService;
 
+        #region Constructor
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="shareholderService"></param>
         public ShareholderController(IShareholderService shareholderService)
         {
             _shareholderService = shareholderService;
         }
+        #endregion
+        
+        #region GetById
         /// <summary>
         /// Find shareholder specified by its id
         /// </summary>
@@ -32,27 +40,46 @@ namespace YourShares.RestApi.Controllers
         /// <returns></returns>
         [Route("{id}")]
         [HttpGet]
-        public async Task<ShareholderSearchViewModel> GetShareholderById([FromRoute] Guid id)
+        public async Task<ShareholderSearchViewModel> GetById([FromRoute] Guid id)
         {
             return await _shareholderService.GetById(id);
         }
+        #endregion
         
+        [Route("companies/{id}")]
+        [HttpGet]
+        public async Task GetByCompanyId([FromRoute] Guid id)
+        {
+            // TODO
+        }
+        
+        [Route("users/{id}")]
+        [HttpGet]
+        public async Task GetByUserId([FromRoute] Guid id)
+        {
+            // TODO
+        }
+
+        #region Search
         /// <summary>
-        /// Search shareholder
+        /// Search shareholder by name
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ResponseModel<List<ShareholderSearchViewModel>>> SearchShareholder([FromQuery] ShareholderSearchModel model)
+        public async Task<ResponseModel<List<ShareholderSearchViewModel>>> SearchShareholder(
+            [FromQuery] ShareholderSearchModel model)
         {
             var result = await _shareholderService.SearchShareholder(model);
-            Response.StatusCode = (int)HttpStatusCode.OK;
+            Response.StatusCode = (int) HttpStatusCode.OK;
             return new ResponseBuilder<List<ShareholderSearchViewModel>>().Success()
                 .Data(result)
                 .Count(result.Count)
                 .build();
         }
+        #endregion
 
+        #region AddUserAsShareholder
         /// <summary>
         /// Add a user as shareholder of company
         /// </summary>
@@ -64,6 +91,7 @@ namespace YourShares.RestApi.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return await _shareholderService.AddUserAsShareHolder(model, userId);
         }
-
+        #endregion
+        
     }
 }

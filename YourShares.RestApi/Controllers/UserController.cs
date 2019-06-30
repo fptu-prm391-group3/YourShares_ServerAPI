@@ -26,6 +26,7 @@ namespace YourShares.RestApi.Controllers
         private readonly IUserProfileService _userProfileService;
         private readonly IConfiguration _configuration;
 
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="UserController" /> class.
         /// </summary>
@@ -37,14 +38,16 @@ namespace YourShares.RestApi.Controllers
             _userProfileService = userProfileService;
             _configuration = configuration;
         }
+        #endregion
 
+        #region GetById
         /// <summary>
         ///     Gets User specified by its identifier.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [Route("/api/user/{id}")]
-        public async Task<ResponseModel<UserViewDetailModel>> GetUserById([FromRoute] Guid id)
+        public async Task<ResponseModel<UserViewDetailModel>> GetById([FromRoute] Guid id)
         {
             var result = await _userProfileService.GetById(id);
             Response.StatusCode = (int)HttpStatusCode.OK;
@@ -53,7 +56,9 @@ namespace YourShares.RestApi.Controllers
                 .Count(1)
                 .build();
         }
+        #endregion
 
+        #region Search
         /// <summary>
         ///     Search User by Email, Phone, Name.
         /// </summary>
@@ -70,33 +75,40 @@ namespace YourShares.RestApi.Controllers
                 .Count(result.Count)
                 .build();
         }
+        #endregion
 
-
+        #region UpdateInfo
         /// <summary>
         ///     Updates the user information with details in the request body.
         /// </summary>
         /// <param name="model">The UserEditInfoModel.</param>
         /// <returns></returns>
         [HttpPut]
-        [Route("/api/user/information")]
+        [Route("/api/users")]
         public async Task UpdateInfo([FromBody] UserEditInfoModel model)
         {
             await _userProfileService.UpdateInfo(model);
             Response.StatusCode = (int)HttpStatusCode.OK;
         }
+        #endregion
 
+        #region UpdateEmail
         /// <summary>
         ///     Updates the user email with details in the request body.
         /// </summary>
         /// <param name="model">The UserEditEmailModel.</param>
         /// <returns></returns>
-        [HttpPut]
-        [Route("/api/user/email")]
+        [HttpPatch]
+        [Route("/api/users/email")]
         public async Task UpdateInfo([FromBody] UserEditEmailModel model)
         {
             await _userProfileService.UpdateEmail(model);
             Response.StatusCode = (int)HttpStatusCode.OK;
         }
+        #endregion
+        
+
+        // TODO Move login and register to another controller
 
         /// <summary>
         /// Register a user account in system.

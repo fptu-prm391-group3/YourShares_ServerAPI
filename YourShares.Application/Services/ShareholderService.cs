@@ -18,22 +18,22 @@ namespace YourShares.Application.Services
     public class ShareholderService : IShareholderService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<Shareholder> _shareholdertRepository;
+        private readonly IRepository<Shareholder> _shareholderRepository;
         private readonly IRepository<Company> _companyRepository;
         private readonly IRepository<UserProfile> _userProfileRepository;
 
-        public ShareholderService(IUnitOfWork unitOfWork, IRepository<Shareholder> shareholdertRepository,
+        public ShareholderService(IUnitOfWork unitOfWork, IRepository<Shareholder> shareholderRepository,
                                  IRepository<Company> companyRepository, IRepository<UserProfile> userProfileRepository)
         {
             _unitOfWork = unitOfWork;
-            _shareholdertRepository = shareholdertRepository;
+            _shareholderRepository = shareholderRepository;
             _companyRepository = companyRepository;
             _userProfileRepository = userProfileRepository;
         }
 
         public async Task<bool> AddUserAsShareHolder(ShareHolderAddUserModel model, string currentUserId)
         {
-            Guid id = Guid.Parse(currentUserId);
+            var id = Guid.Parse(currentUserId);
             var company = _companyRepository.GetManyAsNoTracking(x => x.AdminProfileId == id && x.CompanyId == model.CompanyId);
             if (company == null) throw new EntityNotFoundException($"Company {model.CompanyId} not found");
             var shareholder = new Shareholder
@@ -42,16 +42,16 @@ namespace YourShares.Application.Services
                 UserProfileId = model.UserId,
                 ShareholderTypeCode = model.ShareholderType,
             };
-            _shareholdertRepository.Insert(shareholder);
+            _shareholderRepository.Insert(shareholder);
             await _unitOfWork.CommitAsync();
             return true;
         }
 
         public async Task<ShareholderSearchViewModel> GetById(Guid id)
         {
-            var result = _shareholdertRepository.GetById(id);
+            var result = _shareholderRepository.GetById(id);
             if (result == null) throw new EntityNotFoundException($"shareholder id {id} not found");
-            var query = _shareholdertRepository.GetManyAsNoTracking(x => x.ShareholderId == id)
+            var query = _shareholderRepository.GetManyAsNoTracking(x => x.ShareholderId == id)
                 .Join(_userProfileRepository.GetAllAsNoTracking(),
                 x => x.UserProfileId, y => y.UserProfileId, (x, y) => new ShareholderSearchViewModel
                 {
@@ -80,7 +80,7 @@ namespace YourShares.Application.Services
                     name = $"{x.FirstName} {x.LastName}",
                     x.Email
                 })
-                .Join(_shareholdertRepository.GetAllAsNoTracking(),
+                .Join(_shareholderRepository.GetAllAsNoTracking(),
                 x => x.UserProfileId, y => y.UserProfileId, (x, y) => new ShareholderSearchViewModel
                 {
                     Id = y.ShareholderId,

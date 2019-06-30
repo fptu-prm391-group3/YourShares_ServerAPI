@@ -133,18 +133,18 @@ namespace YourShares.Application.Services
 
             // TODO save to round data
             company.OptionPollAmount = company.OptionPollAmount + model.sharesAmount;
-            company.TotalShares = company.TotalShares + model.sharesAmount;
+            company.TotalShares += model.sharesAmount;
 
             _companyRepository.Update(company);
             await _unitOfWork.CommitAsync();
             return true;
         }
 
-        public async Task AddOptionPoolToSharesholder(CompanyAddOptionPoolToShareholderModel model, Guid CompanyId,Guid SharesholerId)
+        public async Task AddOptionPoolToShareholder(CompanyAddOptionPoolToShareholderModel model, Guid CompanyId,Guid SharesholerId)
         {
             var company = _companyRepository.GetById(CompanyId);
             if (company == null) throw new EntityNotFoundException($"Company id {CompanyId} not found");
-            company.OptionPollAmount = company.OptionPollAmount - model.RestrictedAmount;
+            company.OptionPollAmount -= model.RestrictedAmount;
             await _shareAccountService.AddRestrictedShares(SharesholerId, model.RestrictedAmount,model);
         }
     }

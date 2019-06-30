@@ -11,6 +11,7 @@ namespace YourShares.Application.Interfaces
         /// <summary>
         ///     Searches the company.
         /// </summary>
+        /// <param name="userId"></param>
         /// <param name="model">The model.</param>
         /// <returns></returns>
         Task<List<CompanyViewSearchModel>> SearchCompany(string userId, CompanySearchModel model);
@@ -18,6 +19,7 @@ namespace YourShares.Application.Interfaces
         /// <summary>
         ///     Create the specified model.
         /// </summary>
+        /// <param name="userId"></param>
         /// <param name="model">The model.</param>
         /// <returns></returns>
         Task<CompanyViewModel> CreateCompany(string userId, CompanyCreateModel model);
@@ -45,6 +47,6 @@ namespace YourShares.Application.Interfaces
 
         Task<bool> IncreaseOptionPool(CompanyIncreaseOptionPoolMode model);
 
-        Task AddOptionPoolToSharesholder(CompanyAddOptionPoolToShareholderModel model,Guid companyId,Guid shareholderId);
+        Task AddOptionPoolToShareholder(CompanyAddOptionPoolToShareholderModel model,Guid companyId,Guid shareholderId);
     }
 }

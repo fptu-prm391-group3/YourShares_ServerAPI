@@ -8,10 +8,10 @@ namespace YourShares.Application.Interfaces
 {
     public interface ISharesAccountService
     {
-        Task AddRestrictedShares(Guid ShareholderId, long Restricted, CompanyAddOptionPoolToShareholderModel model);
+        Task AddRestrictedShares(Guid shareholderId, long restricted, CompanyAddOptionPoolToShareholderModel model);
 
-        Task<List<SharesAccountViewModel>> ViewSharesAccount(ShareAccountGetDetailModel model);
+        Task<List<SharesAccountViewModel>> ViewSharesAccountOfUserInCompany(ShareAccountGetDetailModel model);
 
-        Task<List<ShareAccountViewAllModel>> ViewAllSharesAccount(Guid companyId);
+        Task<List<ShareAccountViewAllModel>> ViewAllSharesAccountOfCompany(Guid companyId);
     }
 }

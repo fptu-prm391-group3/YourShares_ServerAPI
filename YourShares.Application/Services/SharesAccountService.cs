@@ -64,7 +64,7 @@ namespace YourShares.Application.Services
             await _restrictedShareService.AddRetrictedShares(model.ConvertibleRatio, model.ConvertibleTime, shareAccountId);
         }
 
-        public async Task<List<ShareAccountViewAllModel>> ViewAllSharesAccount(Guid companyId)
+        public async Task<List<ShareAccountViewAllModel>> ViewAllSharesAccountOfCompany(Guid companyId)
         {
             var query = _shareholderRepository.GetManyAsNoTracking(x => x.CompanyId == companyId)
                 .Join(_userProfileRepository.GetAllAsNoTracking(),
@@ -77,7 +77,7 @@ namespace YourShares.Application.Services
                 .Select(async x => new ShareAccountViewAllModel
                 {
                     Type = x.Shareholder.ShareholderTypeCode,
-                    ListAccount = await ViewSharesAccount(new ShareAccountGetDetailModel
+                    ListAccount = await ViewSharesAccountOfUserInCompany(new ShareAccountGetDetailModel
                     {
                         CompanyId = companyId,
                         UserId = x.UserProfileId,
@@ -88,7 +88,7 @@ namespace YourShares.Application.Services
             return result.ToList();
         }
 
-        public async Task<List<SharesAccountViewModel>> ViewSharesAccount(ShareAccountGetDetailModel model)
+        public async Task<List<SharesAccountViewModel>> ViewSharesAccountOfUserInCompany(ShareAccountGetDetailModel model)
         {
             var TotalShares = (float)_companyRepository.GetById(model.CompanyId)?.TotalShares;
 
