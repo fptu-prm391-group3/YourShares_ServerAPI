@@ -18,6 +18,6 @@ namespace YourShares.Application.Interfaces
 
         Task<UserLoginViewModel> GetUserByEmail(string email);
 
-        Task<bool> CreateUserProfile(UserProfileCreateModel profileModel, UserAccountCreateModel accountCreateModel);
+        Task<bool> CreateUserProfile(UserRegisterModel profileModel, UserAccountCreateModel accountCreateModel);
     }
 }
