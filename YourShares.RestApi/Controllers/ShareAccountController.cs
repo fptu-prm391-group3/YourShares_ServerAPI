@@ -29,19 +29,41 @@ namespace YourShares.RestApi.Controllers
         }
         #endregion
 
+        #region Get by Id       
+        /// <summary>
+        /// Gets the SharesAccount by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [Route("{id}")]
         [HttpGet]
-        public async Task GetById([FromRoute] Guid id)
+        public async Task<ResponseModel<SharesAccountDetailModel>> GetById([FromRoute] Guid id)
         {
-            // TODO
+            var result = await _sharesAccountService.GetById(id);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<SharesAccountDetailModel>().Success()
+                .Data(result)
+                .build();
         }
+        #endregion
 
+        #region Gets the SharesAccount by shareholderId.
+        /// <summary>
+        /// Gets the SharesAccount by shareholderId.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [Route("shareholders/{id}")]
         [HttpGet]
-        public async Task GetByShareholderId([FromRoute] Guid id)
+        public async Task<ResponseModel<List<SharesAccountDetailModel>>> GetByShareholderId([FromRoute] Guid id)
         {
-            // TODO
+            var result = await _sharesAccountService.GetByShareholderId(id);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<List<SharesAccountDetailModel>>().Success()
+                .Data(result)
+                .build();
         }
+        #endregion
 
         #region View Shares Account Of User In Company (*)
         /// <summary>

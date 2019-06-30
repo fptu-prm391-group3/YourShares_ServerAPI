@@ -45,20 +45,44 @@ namespace YourShares.RestApi.Controllers
             return await _shareholderService.GetById(id);
         }
         #endregion
-        
+
+        #region Gets List Shareholder Detail by company id.
+        /// <summary>
+        /// Gets List Shareholder Detail by company id.
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <returns></returns>
         [Route("companies/{id}")]
         [HttpGet]
-        public async Task GetByCompanyId([FromRoute] Guid id)
+        public async Task<ResponseModel<List<ShareholderDetailModel>>> GetByCompanyId([FromRoute] Guid id)
         {
-            // TODO
+            var result = await _shareholderService.GetByCompanyId(id);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<List<ShareholderDetailModel>>().Success()
+                .Data(result)
+                .Count(result.Count)
+                .build();
         }
-        
+        #endregion
+
+        #region Gets List Shareholder detail by user id.
+        /// <summary>
+        /// Gets List Shareholder detail by user id.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [Route("users/{id}")]
         [HttpGet]
-        public async Task GetByUserId([FromRoute] Guid id)
+        public async Task<ResponseModel<List<ShareholderDetailModel>>> GetByUserId([FromRoute] Guid id)
         {
-            // TODO
+            var result = await _shareholderService.GetByUserId(id);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<List<ShareholderDetailModel>>().Success()
+                .Data(result)
+                .Count(result.Count)
+                .build();
         }
+        #endregion
 
         #region Search
         /// <summary>

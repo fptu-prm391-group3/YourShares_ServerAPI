@@ -47,6 +47,19 @@ namespace YourShares.Application.Services
             return true;
         }
 
+        public async Task<List<ShareholderDetailModel>> GetByCompanyId(Guid id)
+        {
+            var result = _shareholderRepository.GetManyAsNoTracking(x => x.CompanyId == id)
+                        .Select(x => new ShareholderDetailModel
+                        {
+                            CompanyId = x.CompanyId,
+                            ShareholderId = x.ShareholderId,
+                            ShareholderType = x.ShareholderTypeCode,
+                            UserProfileId = x.UserProfileId
+                        }).ToList();
+            return result;
+        }
+
         public async Task<ShareholderSearchViewModel> GetById(Guid id)
         {
             var result = _shareholderRepository.GetById(id);
@@ -55,13 +68,26 @@ namespace YourShares.Application.Services
                 .Join(_userProfileRepository.GetAllAsNoTracking(),
                 x => x.UserProfileId, y => y.UserProfileId, (x, y) => new ShareholderSearchViewModel
                 {
-                    Email=y.Email,
-                    Id=x.ShareholderId,
-                    Name= $"{y.FirstName} {y.LastName}",
-                    ShareholderTypeCode=x.ShareholderTypeCode
+                    Email = y.Email,
+                    Id = x.ShareholderId,
+                    Name = $"{y.FirstName} {y.LastName}",
+                    ShareholderTypeCode = x.ShareholderTypeCode
 
                 }).FirstOrDefault();
             return query;
+        }
+
+        public async Task<List<ShareholderDetailModel>> GetByUserId(Guid id)
+        {
+            var result = _shareholderRepository.GetManyAsNoTracking(x => x.UserProfileId == id)
+                        .Select(x => new ShareholderDetailModel
+                        {
+                            CompanyId = x.CompanyId,
+                            ShareholderId = x.ShareholderId,
+                            ShareholderType = x.ShareholderTypeCode,
+                            UserProfileId = x.UserProfileId
+                        }).ToList();
+            return result;
         }
 
         public async Task<List<ShareholderSearchViewModel>> SearchShareholder(ShareholderSearchModel model)

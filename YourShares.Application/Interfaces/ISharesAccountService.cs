@@ -13,5 +13,9 @@ namespace YourShares.Application.Interfaces
         Task<List<SharesAccountViewModel>> ViewSharesAccountOfUserInCompany(ShareAccountGetDetailModel model);
 
         Task<List<ShareAccountViewAllModel>> ViewAllSharesAccountOfCompany(Guid companyId);
+
+        Task<SharesAccountDetailModel> GetById(Guid id);
+
+        Task<List<SharesAccountDetailModel>> GetByShareholderId(Guid id);
     }
 }

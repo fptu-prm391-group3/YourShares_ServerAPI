@@ -37,7 +37,7 @@ namespace YourShares.Application.Services
             _userProfileRepository = userProfileRepository;
         }
 
-        public async Task AddRestrictedShares(Guid shareholderId, long restricted, 
+        public async Task AddRestrictedShares(Guid shareholderId, long restricted,
             CompanyAddOptionPoolToShareholderModel model)
         {
             Guid shareAccountId;
@@ -62,6 +62,30 @@ namespace YourShares.Application.Services
                 shareAccountId = query.ShareAccountId;
             }
             await _restrictedShareService.AddRetrictedShares(model.ConvertibleRatio, model.ConvertibleTime, shareAccountId);
+        }
+
+        public async Task<SharesAccountDetailModel> GetById(Guid id)
+        {
+            var query = _shareAccountRepository.GetById(id);
+            return new SharesAccountDetailModel
+            {
+                Name = query.ShareTypeCode.Contains(RefShareTypeCode.Restricted) ? "Restricted" : "Standard",
+                ShareAmount = query.ShareAmount,
+                ShareAccountId = query.ShareAccountId,
+                ShareholderId = query.ShareholderId
+            };
+        }
+
+        public async Task<List<SharesAccountDetailModel>> GetByShareholderId(Guid id)
+        {
+            var result = _shareAccountRepository.GetManyAsNoTracking(x => x.ShareholderId == id)
+                .Select(x=> new SharesAccountDetailModel {
+                    Name = x.ShareTypeCode.Contains(RefShareTypeCode.Restricted) ? "Restricted" : "Standard",
+                    ShareAmount = x.ShareAmount,
+                    ShareAccountId = x.ShareAccountId,
+                    ShareholderId = x.ShareholderId
+                }).ToList();
+            return result;
         }
 
         public async Task<List<ShareAccountViewAllModel>> ViewAllSharesAccountOfCompany(Guid companyId)
