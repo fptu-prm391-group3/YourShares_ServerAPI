@@ -19,14 +19,17 @@ namespace YourShares.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Company> _companyRepository;
         private readonly IRepository<UserProfile> _userRepository;
+        private readonly ISharesAccountService _shareAccountService;
 
         public CompanyService(IUnitOfWork unitOfWork
             , IRepository<Company> companyRepository
-            , IRepository<UserProfile> userRepository)
+            , IRepository<UserProfile> userRepository
+            , ISharesAccountService shareAccountService)
         {
             _unitOfWork = unitOfWork;
             _companyRepository = companyRepository;
             _userRepository = userRepository;
+            _shareAccountService = shareAccountService;
         }
 
         public async Task<CompanyViewModel> CreateCompany(string userId, CompanyCreateModel model)
@@ -40,7 +43,6 @@ namespace YourShares.Application.Services
                 Phone = model.Phone,
                 Capital = model.Capital,
                 TotalShares = model.TotalShares,
-                OptionPollAmount = model.OptionPoll
             };
             var newCompany = _companyRepository.Insert(company);
             await _unitOfWork.CommitAsync();
@@ -123,6 +125,28 @@ namespace YourShares.Application.Services
             _companyRepository.Delete(company);
             await _unitOfWork.CommitAsync();
             return true;
+        }
+
+        public async Task<bool> IncreaseOptionPool(CompanyIncreaseOptionPoolMode model)
+        {
+            var company = _companyRepository.GetById(model.CompanyId);
+            if (company == null) throw new EntityNotFoundException($"Company id {model.CompanyId} not found");
+
+            // TODO save to round data
+            company.OptionPollAmount = company.OptionPollAmount + model.sharesAmount;
+            company.TotalShares = company.TotalShares + model.sharesAmount;
+
+            _companyRepository.Update(company);
+            await _unitOfWork.CommitAsync();
+            return true;
+        }
+
+        public async Task AddOptionPoolToSharesholder(CompanyAddOptionPoolToShareholderModel model, Guid CompanyId,Guid SharesholerId)
+        {
+            var company = _companyRepository.GetById(CompanyId);
+            if (company == null) throw new EntityNotFoundException($"Company id {CompanyId} not found");
+            company.OptionPollAmount = company.OptionPollAmount - model.RestrictedAmount;
+            await _shareAccountService.AddRestrictedShares(SharesholerId, model.RestrictedAmount,model);
         }
     }
 }

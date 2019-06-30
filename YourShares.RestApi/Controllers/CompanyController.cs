@@ -93,6 +93,35 @@ namespace YourShares.RestApi.Controllers
             Response.StatusCode = (int)HttpStatusCode.OK;
         }
 
+        /// <summary>
+        ///     Updates the company with details in the request body.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("/companies/{companyId}/shareholders/{shareholderId}/share-accounts/")]
+        public async Task AddOptionPoolToSharesholder([FromBody] CompanyAddOptionPoolToShareholderModel model
+                                                       , [FromRoute] Guid companyId
+                                                       , [FromRoute] Guid shareholderId)
+        {
+            await _companyService.AddOptionPoolToSharesholder(model,companyId,shareholderId);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+        }
+
+        /// <summary>
+        ///     Increase OptionPool in company with details in the request body.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("option-pool")]
+        public async Task<bool> IncreaseOptionPool([FromBody] CompanyIncreaseOptionPoolMode model)
+        {
+            var result = await _companyService.IncreaseOptionPool(model);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return result;
+        }
+
 
         /// <summary>
         ///     Delete a company specified by its identifier.

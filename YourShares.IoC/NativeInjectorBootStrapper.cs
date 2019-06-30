@@ -26,6 +26,8 @@ namespace YourShares.IoC
             services.AddTransient<IUserAccountService, UserAccountService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IShareholderService, ShareholderService>();
+            services.AddTransient<ISharesAccountService, SharesAccountService>();
+            services.AddTransient<IRetrictedSharesService, RetrictedSharesService>();
             
             // Data- Repo
             services.AddScoped<IRepository<UserProfile>, Repository<UserProfile>>();
