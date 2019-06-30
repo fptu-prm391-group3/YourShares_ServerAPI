@@ -1,6 +1,8 @@
+using YourShares.Application.Interfaces;
+
 namespace YourShares.Application.Services
 {
-    public class GoogleAccountService
+    public class GoogleAccountService : IUserGoogleAccountService
     {
         
     }

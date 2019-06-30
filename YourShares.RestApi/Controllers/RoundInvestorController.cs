@@ -12,36 +12,36 @@ using YourShares.RestApi.ApiResponse;
 namespace YourShares.RestApi.Controllers
 {
     [ApiController]
-    [Route("/api/rounds")]
+    [Route("/api/round-investors")]
     [Produces("application/json")]
     [Authorize]
-    public class RoundController : ControllerBase
+    public class RoundInvestorController : ControllerBase
     {
-        private readonly IRoundService _roundService;
+        private readonly IRoundInvestorService _roundInvestorService;
 
         #region Constructor
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="roundService"> Injected RoundService </param>
-        public RoundController(IRoundService roundService)
+        /// <param name="roundInvestorService"></param>
+        public RoundInvestorController(IRoundInvestorService roundInvestorService)
         {
-            _roundService = roundService;
+            _roundInvestorService = roundInvestorService;
         }
         #endregion
-        
+
         #region Get by Id
         /// <summary>
-        /// Get round specified by its id
+        /// Get Round investor specified by its identifier
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<ResponseModel<Round>> GetById([FromRoute] Guid id)
+        public async Task<ResponseModel<RoundInvestor>> GetById(Guid id)
         {
-            var result = await _roundService.GetById(id);
-            return new ResponseBuilder<Round>()
+            var result = await _roundInvestorService.GetById(id);
+            return new ResponseBuilder<RoundInvestor>()
                 .Success()
                 .Data(result)
                 .Count(1)
@@ -49,39 +49,38 @@ namespace YourShares.RestApi.Controllers
         }
         #endregion
 
-        #region Get by company id
+        #region Get by Round Id
         /// <summary>
-        /// Get all rounds of a company specified by company id
+        /// Get all Round investor of a round specified by round id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Route("companies/{id}")]
         [HttpGet]
-        public async Task<ResponseModel<List<Round>>> GetByCompanyId([FromRoute] Guid id)
+        [Route("rounds/{id}")]
+        public async Task<ResponseModel<List<RoundInvestor>>> GetByRoundId(Guid id)
         {
-            var result = await _roundService.GetByCompanyId(id);
-            return new ResponseBuilder<List<Round>>()
+            var result = await _roundInvestorService.GetByRoundId(id);
+            return new ResponseBuilder<List<RoundInvestor>>()
                 .Success()
                 .Data(result)
                 .Count(result.Count)
                 .build();
         }
         #endregion
-        
-        #region Create
+
+        #region Create round investor
         /// <summary>
-        /// Create a new round of company, round detail in the request body
+        /// Create a round investor, detail in request body
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<Round> CreateRound([FromBody] RoundCreateModel model)
+        public async Task<RoundInvestor> CreateRoundInvestor(RoundInvestorCreateModel model)
         {
-            var result = await _roundService.InsertRound(model);
+            var result = await _roundInvestorService.InsertRoundInvestor(model);
             Response.StatusCode = (int) HttpStatusCode.Created;
             return result;
         }
         #endregion
-        
     }
 }

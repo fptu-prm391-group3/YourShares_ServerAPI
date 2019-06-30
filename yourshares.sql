@@ -7,6 +7,46 @@ GO
 USE yourshares
 GO
 
+CREATE TABLE yourshares.dbo.ref_share_type_code (
+  share_type_code varchar(10) NOT NULL,
+  name varchar(50) NOT NULL,
+  CONSTRAINT PK_ref_share_type_code_share_type_code PRIMARY KEY CLUSTERED (share_type_code)
+)
+ON [PRIMARY]
+GO
+
+CREATE TABLE yourshares.dbo.ref_shareholder_type_code (
+  shareholder_type_code varchar(10) NOT NULL,
+  name varchar(50) NOT NULL,
+  CONSTRAINT PK_ref_shareholder_type_code_shareholder_type_code PRIMARY KEY CLUSTERED (shareholder_type_code)
+)
+ON [PRIMARY]
+GO
+
+CREATE TABLE yourshares.dbo.ref_transaction_status_code (
+  transaction_status_code varchar(10) NOT NULL,
+  name varchar(50) NOT NULL,
+  CONSTRAINT PK_ref_transaction_status_code_transaction_status_code PRIMARY KEY CLUSTERED (transaction_status_code)
+)
+ON [PRIMARY]
+GO
+
+CREATE TABLE yourshares.dbo.ref_transaction_type_code (
+  transaction_type_code varchar(10) NOT NULL,
+  name varchar(50) NOT NULL,
+  CONSTRAINT PK_ref_transaction_type_code_transaction_type_code PRIMARY KEY CLUSTERED (transaction_type_code)
+)
+ON [PRIMARY]
+GO
+
+CREATE TABLE yourshares.dbo.ref_user_account_status_code (
+  user_account_status_code varchar(10) NOT NULL,
+  name varchar(50) NOT NULL,
+  CONSTRAINT PK_ref_user_account_status_code_user_account_status_code PRIMARY KEY CLUSTERED (user_account_status_code)
+)
+ON [PRIMARY]
+GO
+
 CREATE TABLE yourshares.dbo.user_profile (
   user_profile_id uniqueidentifier NOT NULL,
   first_name nvarchar(50) NOT NULL,
@@ -39,6 +79,14 @@ CREATE TABLE yourshares.dbo.google_account (
   user_profile_id uniqueidentifier NOT NULL,
   google_account_id varchar(30) NOT NULL,
   CONSTRAINT PK_google_account_user_profile_id PRIMARY KEY CLUSTERED (user_profile_id)
+)
+ON [PRIMARY]
+GO
+
+CREATE TABLE yourshares.dbo.facebook_account (
+  user_profile_id uniqueidentifier NOT NULL,
+  facebook_account_id varchar(30) NOT NULL,
+  CONSTRAINT PK_facebook_account_user_profile_id PRIMARY KEY CLUSTERED (user_profile_id)
 )
 ON [PRIMARY]
 GO
@@ -123,46 +171,6 @@ CREATE TABLE yourshares.dbo.transaction_request (
   approver_id uniqueidentifier NOT NULL,
   request_message nvarchar(max) NULL,
   CONSTRAINT PK_transaction_request_transaction_request_id PRIMARY KEY CLUSTERED (transaction_request_id)
-)
-ON [PRIMARY]
-GO
-
-CREATE TABLE yourshares.dbo.ref_share_type_code (
-  share_type_code varchar(10) NOT NULL,
-  name varchar(50) NOT NULL,
-  CONSTRAINT PK_ref_share_type_code_share_type_code PRIMARY KEY CLUSTERED (share_type_code)
-)
-ON [PRIMARY]
-GO
-
-CREATE TABLE yourshares.dbo.ref_shareholder_type_code (
-  shareholder_type_code varchar(10) NOT NULL,
-  name varchar(50) NOT NULL,
-  CONSTRAINT PK_ref_shareholder_type_code_shareholder_type_code PRIMARY KEY CLUSTERED (shareholder_type_code)
-)
-ON [PRIMARY]
-GO
-
-CREATE TABLE yourshares.dbo.ref_transaction_status_code (
-  transaction_status_code varchar(10) NOT NULL,
-  name varchar(50) NOT NULL,
-  CONSTRAINT PK_ref_transaction_status_code_transaction_status_code PRIMARY KEY CLUSTERED (transaction_status_code)
-)
-ON [PRIMARY]
-GO
-
-CREATE TABLE yourshares.dbo.ref_transaction_type_code (
-  transaction_type_code varchar(10) NOT NULL,
-  name varchar(50) NOT NULL,
-  CONSTRAINT PK_ref_transaction_type_code_transaction_type_code PRIMARY KEY CLUSTERED (transaction_type_code)
-)
-ON [PRIMARY]
-GO
-
-CREATE TABLE yourshares.dbo.ref_user_account_status_code (
-  user_account_status_code varchar(10) NOT NULL,
-  name varchar(50) NOT NULL,
-  CONSTRAINT PK_ref_user_account_status_code_user_account_status_code PRIMARY KEY CLUSTERED (user_account_status_code)
 )
 ON [PRIMARY]
 GO
