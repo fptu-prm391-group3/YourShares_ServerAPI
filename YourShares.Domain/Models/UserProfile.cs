@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace YourShares.RestApi.Models
+namespace YourShares.Domain.Models
 {
     public partial class UserProfile
     {

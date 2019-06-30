@@ -8,7 +8,6 @@ using YourShares.Data.Interfaces;
 using YourShares.Data.UoW;
 using YourShares.Domain.Models;
 using YourShares.Domain.Util;
-using YourShares.RestApi.Models;
 
 namespace YourShares.Application.Services
 {
@@ -34,16 +33,16 @@ namespace YourShares.Application.Services
         {
             if (!ValidateUtils.IsMail(model.Email)) throw new MalformedEmailException();
             if (model.Password.Length < 8) throw new FormatException("Password invalid");
-            var passwordSail = Guid.NewGuid();
-            var data = HashingUtils.GetHashData(model.Password + passwordSail);
+            var passwordSalt = Guid.NewGuid();
+            var data = HashingUtils.GetHashData(model.Password + passwordSalt);
             _userAccountRepository.Insert(new UserAccount
             {
                 Email = model.Email,
                 PasswordHash = data.DataHashed,
                 PasswordHashAlgorithm = data.HashType,
                 UserProfileId = userProfileId,
-                PasswordSalt = passwordSail,
-                UserAccountStatusCode = RefUserAccountStatusCode.GUEST
+                PasswordSalt = passwordSalt,
+                UserAccountStatusCode = RefUserAccountStatusCode.Guest
             });
             await _unitOfWork.CommitAsync();
             return true;
