@@ -40,7 +40,7 @@ namespace YourShares.RestApi.Controllers
         /// <summary>
         /// Search shareholder
         /// </summary>
-        /// <param name="shareholder"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpGet]
         public async Task<ResponseModel<List<ShareholderSearchViewModel>>> SearchShareholder([FromQuery] ShareholderSearchModel model)
@@ -56,24 +56,13 @@ namespace YourShares.RestApi.Controllers
         /// <summary>
         /// Add a user as shareholder of company
         /// </summary>
-        /// <param name="shareholder"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
         public async Task<bool> AddUserAsShareholder([FromBody] ShareHolderAddUserModel model)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return await _shareholderService.AddUserAsShareHolder(model, userId);
-        }
-
-        /// <summary>
-        /// Remove shareholder from company
-        /// </summary>
-        /// <param name="shareholder"></param>
-        /// <returns></returns>
-        [HttpDelete]
-        public Task RemoveShareholderFromCompany([FromBody] string shareholder)
-        {
-            return null;
         }
 
     }

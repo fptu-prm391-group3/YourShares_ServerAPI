@@ -6,7 +6,6 @@ using YourShares.Data.Interfaces;
 using YourShares.Data.Repository;
 using YourShares.Data.UoW;
 using YourShares.Domain.Models;
-using YourShares.RestApi.Models;
 
 namespace YourShares.IoC
 {

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using YourShares.Application.Interfaces;
 using YourShares.Application.ViewModels;
 using YourShares.Data.Interfaces;
 using YourShares.Domain.Models;
-using YourShares.RestApi.Models;
 
 namespace YourShares.Application.Services
 {
@@ -19,7 +17,7 @@ namespace YourShares.Application.Services
         private readonly IRepository<RestrictedShare> _restrictedShareRepository;
         private readonly IRepository<Company> _companyRepository;
         private readonly IRepository<UserProfile> _userProfileRepository;
-        private readonly IRetrictedSharesService _retrictedSharesService;
+        private readonly IRetrictedSharesService _restrictedShareService;
 
         public SharesAccountService(IUnitOfWork unitOfWork
             , IRepository<ShareAccount> shareAccountRepository
@@ -27,11 +25,11 @@ namespace YourShares.Application.Services
             , IRepository<RestrictedShare> restrictedShareRepository
             , IRepository<Company> companyRepository
             , IRepository<UserProfile> userProfileRepository
-            , IRetrictedSharesService retrictedSharesService)
+            , IRetrictedSharesService restrictedShareService)
         {
             _unitOfWork = unitOfWork;
             _shareAccountRepository = shareAccountRepository;
-            _retrictedSharesService = retrictedSharesService;
+            _restrictedShareService = restrictedShareService;
             _shareholderRepository = shareholderRepository;
             _restrictedShareRepository = restrictedShareRepository;
             _companyRepository = companyRepository;
@@ -39,18 +37,19 @@ namespace YourShares.Application.Services
             _userProfileRepository = userProfileRepository;
         }
 
-        public async Task AddRestrictedShares(Guid ShareholderId, long Restricted, CompanyAddOptionPoolToShareholderModel model)
+        public async Task AddRestrictedShares(Guid shareholderId, long restricted, 
+            CompanyAddOptionPoolToShareholderModel model)
         {
-            var shareAccountId = Guid.Empty;
+            Guid shareAccountId;
             var query = _shareAccountRepository.GetManyAsNoTracking(x =>
-                              x.ShareholderId == ShareholderId
+                              x.ShareholderId == shareholderId
                               && x.ShareTypeCode.ToLower().Contains(RefShareTypeCode.Restricted)).FirstOrDefault();
             if (query == null)
             {
                 var account = new ShareAccount
                 {
-                    ShareAmount = Restricted,
-                    ShareholderId = ShareholderId,
+                    ShareAmount = restricted,
+                    ShareholderId = shareholderId,
                     ShareTypeCode = RefShareTypeCode.Restricted
                 };
                 var inserted = _shareAccountRepository.Insert(account).Entity;
@@ -58,18 +57,18 @@ namespace YourShares.Application.Services
             }
             else
             {
-                query.ShareAmount = query.ShareAmount + Restricted;
+                query.ShareAmount += restricted;
                 _shareAccountRepository.Update(query);
                 shareAccountId = query.ShareAccountId;
             }
-            await _retrictedSharesService.AddRetrictedShares(model.ConvertibleRatio, model.ConvertibleTime, shareAccountId);
+            await _restrictedShareService.AddRetrictedShares(model.ConvertibleRatio, model.ConvertibleTime, shareAccountId);
         }
 
         public async Task<List<ShareAccountViewAllModel>> ViewAllSharesAccount(Guid companyId)
         {
             var query = _shareholderRepository.GetManyAsNoTracking(x => x.CompanyId == companyId)
                 .Join(_userProfileRepository.GetAllAsNoTracking(),
-                x => x.UserId, y => y.UserProfileId, (x, y) => new
+                x => x.UserProfileId, y => y.UserProfileId, (x, y) => new
                 {
                     Shareholder = x,
                     Name = $"{y.FirstName} {y.LastName}",
@@ -94,7 +93,7 @@ namespace YourShares.Application.Services
             var TotalShares = (float)_companyRepository.GetById(model.CompanyId)?.TotalShares;
 
             var query = _shareholderRepository.GetManyAsNoTracking(x =>
-                         x.UserId == model.UserId && x.CompanyId == model.CompanyId)
+                         x.UserProfileId == model.UserId && x.CompanyId == model.CompanyId)
                     .Join(_shareAccountRepository.GetAll(), x =>
                     x.ShareholderId, y => y.ShareholderId, (x, y) => new
                     {
@@ -115,7 +114,7 @@ namespace YourShares.Application.Services
                             new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(
                                 _restrictedShareRepository.GetById(x.shareAccount.ShareAccountId).AssignDate +
                                 _restrictedShareRepository.GetById(x.shareAccount.ShareAccountId).ConvertibleTime) :
-                            new DateTime(),
+                            new DateTime()
             }).ToList();
 
             return result;

@@ -8,7 +8,6 @@ using YourShares.Data.Interfaces;
 using YourShares.Data.UoW;
 using YourShares.Domain.Models;
 using YourShares.Domain.Util;
-using YourShares.RestApi.Models;
 
 namespace YourShares.Application.Services
 {
@@ -43,7 +42,7 @@ namespace YourShares.Application.Services
                 PasswordHashAlgorithm = data.HashType,
                 UserProfileId = userProfileId,
                 PasswordSalt = passwordSail,
-                UserAccountStatusCode = RefUserAccountStatusCode.GUEST
+                UserAccountStatusCode = RefUserAccountStatusCode.Guest
             });
             await _unitOfWork.CommitAsync();
             return true;
