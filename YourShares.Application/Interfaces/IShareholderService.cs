@@ -16,5 +16,9 @@ namespace YourShares.Application.Interfaces
         Task<List<ShareholderSearchViewModel>> SearchShareholder(ShareholderSearchModel model);
 
         Task<ShareholderSearchViewModel> GetById(Guid id);
+
+        Task<List<ShareholderDetailModel>> GetByCompanyId(Guid id);
+
+        Task<List<ShareholderDetailModel>> GetByUserId(Guid id);
     }
 }

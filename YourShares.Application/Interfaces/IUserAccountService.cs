@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using YourShares.Application.ViewModels;
-using YourShares.RestApi.Models;
+using YourShares.Domain.Models;
 
 namespace YourShares.Application.Interfaces
 {

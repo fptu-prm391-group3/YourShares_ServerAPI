@@ -9,8 +9,8 @@ using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
 using YourShares.Data;
 using YourShares.Data.Interfaces;
+using YourShares.Domain.Models;
 using YourShares.Domain.Util;
-using YourShares.RestApi.Models;
 
 namespace YourShares.Application.Services
 {
@@ -59,12 +59,12 @@ namespace YourShares.Application.Services
                 Email = result.Email,
                 PasswordHash = result.PasswordHash,
                 PasswordHashAlgorithm = result.PasswordHashAlgorithm,
-                PasswordSon = result.PasswordSalt
+                PasswordSalt = result.PasswordSalt
 
             };
         }
 
-        public async Task<bool> CreateUserProfile(UserProfileCreateModel profileModel
+        public async Task<bool> CreateUserProfile(UserRegisterModel profileModel
             , UserAccountCreateModel accountModel)
         {
             if (!ValidateUtils.IsMail(profileModel.Email)) throw new FormatException("Email address invalid");

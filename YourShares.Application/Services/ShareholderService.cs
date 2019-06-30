@@ -10,7 +10,6 @@ using YourShares.Application.ViewModels;
 using YourShares.Data.Interfaces;
 using YourShares.Domain.Models;
 using YourShares.Domain.Util;
-using YourShares.RestApi.Models;
 using System.Linq.Dynamic.Core;
 using Microsoft.EntityFrameworkCore.Internal;
 
@@ -19,50 +18,76 @@ namespace YourShares.Application.Services
     public class ShareholderService : IShareholderService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<Shareholder> _shareholdertRepository;
+        private readonly IRepository<Shareholder> _shareholderRepository;
         private readonly IRepository<Company> _companyRepository;
         private readonly IRepository<UserProfile> _userProfileRepository;
 
-        public ShareholderService(IUnitOfWork unitOfWork, IRepository<Shareholder> shareholdertRepository,
+        public ShareholderService(IUnitOfWork unitOfWork, IRepository<Shareholder> shareholderRepository,
                                  IRepository<Company> companyRepository, IRepository<UserProfile> userProfileRepository)
         {
             _unitOfWork = unitOfWork;
-            _shareholdertRepository = shareholdertRepository;
+            _shareholderRepository = shareholderRepository;
             _companyRepository = companyRepository;
             _userProfileRepository = userProfileRepository;
         }
 
         public async Task<bool> AddUserAsShareHolder(ShareHolderAddUserModel model, string currentUserId)
         {
-            Guid id = Guid.Parse(currentUserId);
+            var id = Guid.Parse(currentUserId);
             var company = _companyRepository.GetManyAsNoTracking(x => x.AdminProfileId == id && x.CompanyId == model.CompanyId);
             if (company == null) throw new EntityNotFoundException($"Company {model.CompanyId} not found");
             var shareholder = new Shareholder
             {
                 CompanyId = model.CompanyId,
-                UserId = model.UserId,
+                UserProfileId = model.UserId,
                 ShareholderTypeCode = model.ShareholderType,
             };
-            _shareholdertRepository.Insert(shareholder);
+            _shareholderRepository.Insert(shareholder);
             await _unitOfWork.CommitAsync();
             return true;
         }
 
+        public async Task<List<ShareholderDetailModel>> GetByCompanyId(Guid id)
+        {
+            var result = _shareholderRepository.GetManyAsNoTracking(x => x.CompanyId == id)
+                        .Select(x => new ShareholderDetailModel
+                        {
+                            CompanyId = x.CompanyId,
+                            ShareholderId = x.ShareholderId,
+                            ShareholderType = x.ShareholderTypeCode,
+                            UserProfileId = x.UserProfileId
+                        }).ToList();
+            return result;
+        }
+
         public async Task<ShareholderSearchViewModel> GetById(Guid id)
         {
-            var result = _shareholdertRepository.GetById(id);
+            var result = _shareholderRepository.GetById(id);
             if (result == null) throw new EntityNotFoundException($"shareholder id {id} not found");
-            var query = _shareholdertRepository.GetManyAsNoTracking(x => x.ShareholderId == id)
+            var query = _shareholderRepository.GetManyAsNoTracking(x => x.ShareholderId == id)
                 .Join(_userProfileRepository.GetAllAsNoTracking(),
-                x => x.UserId, y => y.UserProfileId, (x, y) => new ShareholderSearchViewModel
+                x => x.UserProfileId, y => y.UserProfileId, (x, y) => new ShareholderSearchViewModel
                 {
-                    Email=y.Email,
-                    Id=x.ShareholderId,
-                    Name= $"{y.FirstName} {y.LastName}",
-                    ShareholderTypeCode=x.ShareholderTypeCode
+                    Email = y.Email,
+                    Id = x.ShareholderId,
+                    Name = $"{y.FirstName} {y.LastName}",
+                    ShareholderTypeCode = x.ShareholderTypeCode
 
                 }).FirstOrDefault();
             return query;
+        }
+
+        public async Task<List<ShareholderDetailModel>> GetByUserId(Guid id)
+        {
+            var result = _shareholderRepository.GetManyAsNoTracking(x => x.UserProfileId == id)
+                        .Select(x => new ShareholderDetailModel
+                        {
+                            CompanyId = x.CompanyId,
+                            ShareholderId = x.ShareholderId,
+                            ShareholderType = x.ShareholderTypeCode,
+                            UserProfileId = x.UserProfileId
+                        }).ToList();
+            return result;
         }
 
         public async Task<List<ShareholderSearchViewModel>> SearchShareholder(ShareholderSearchModel model)
@@ -81,8 +106,8 @@ namespace YourShares.Application.Services
                     name = $"{x.FirstName} {x.LastName}",
                     x.Email
                 })
-                .Join(_shareholdertRepository.GetAllAsNoTracking(),
-                x => x.UserProfileId, y => y.UserId, (x, y) => new ShareholderSearchViewModel
+                .Join(_shareholderRepository.GetAllAsNoTracking(),
+                x => x.UserProfileId, y => y.UserProfileId, (x, y) => new ShareholderSearchViewModel
                 {
                     Id = y.ShareholderId,
                     Email = x.Email,

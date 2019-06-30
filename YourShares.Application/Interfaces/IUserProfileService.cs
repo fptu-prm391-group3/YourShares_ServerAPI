@@ -3,9 +3,8 @@ using System;
 using System.Threading.Tasks;
  using YourShares.Application.SearchModels;
  using YourShares.Application.ViewModels;
- using YourShares.RestApi.Models;
 
- namespace YourShares.Application.Interfaces
+namespace YourShares.Application.Interfaces
 {
     public interface IUserProfileService
     {
@@ -19,6 +18,6 @@ using System.Threading.Tasks;
 
         Task<UserLoginViewModel> GetUserByEmail(string email);
 
-        Task<bool> CreateUserProfile(UserProfileCreateModel profileModel, UserAccountCreateModel accountCreateModel);
+        Task<bool> CreateUserProfile(UserRegisterModel profileModel, UserAccountCreateModel accountCreateModel);
     }
 }
