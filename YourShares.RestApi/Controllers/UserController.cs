@@ -24,19 +24,17 @@ namespace YourShares.RestApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserProfileService _userProfileService;
-        private readonly IConfiguration _configuration;
 
         #region Constructor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="UserController" /> class.
         /// </summary>
         /// <param name="userProfileService">The User profile service.</param>
-        /// <param name="configuration">Configuration from appsettings.json</param>
         /// <returns></returns>
-        public UserController(IUserProfileService userProfileService, IConfiguration configuration)
+        public UserController(IUserProfileService userProfileService)
         {
             _userProfileService = userProfileService;
-            _configuration = configuration;
         }
         #endregion
 
@@ -106,76 +104,5 @@ namespace YourShares.RestApi.Controllers
             Response.StatusCode = (int)HttpStatusCode.OK;
         }
         #endregion
-        
-
-        // TODO Move login and register to another controller
-
-        /// <summary>
-        /// Register a user account in system.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [AllowAnonymous]
-        [HttpPost]
-        public async Task Register([FromBody] UserCreateViewModel model)
-        {
-            await _userProfileService.CreateUserProfile(new UserProfileCreateModel
-            {
-                Email = model.Email,
-                Phone = model.Phone,
-                Address = model.Address,
-                LastName = model.LastName,
-                FirstName = model.FirstName
-            }, new UserAccountCreateModel
-            {
-                Email = model.Email,
-                Password = model.Password
-            });
-        }
-
-        /// <summary>
-        /// Login to system with a system account.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [AllowAnonymous]
-        [HttpPost]
-        [Route("auth")]
-        public async Task<UserLoginTokenModel> LoginWithEmail([FromBody] UserLoginModel model)
-        {
-            var user = await _userProfileService.GetUserByEmail(model.Email);
-            if (HashingUtils.HashString(model.Password + user.PasswordSon, user.PasswordHashAlgorithm) == user.PasswordHash)
-            {
-                Response.StatusCode = (int)HttpStatusCode.OK;
-                var token = BuildToken(user);
-                return new UserLoginTokenModel
-                {
-                    UserId = user.UserProfileId.ToString(),
-                    Jwt = token
-                };
-            }
-
-            Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return null;
-        }
-
-        private string BuildToken(UserLoginViewModel validLoginUserLogin)
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, validLoginUserLogin.UserProfileId.ToString()),
-                new Claim(ClaimTypes.Email, validLoginUserLogin.Email)
-            };
-
-            var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
-                _configuration["Jwt:Audience"],
-                claims,
-                expires: DateTime.Now.AddDays(int.Parse(_configuration["Jwt:ExpiredDays"])),
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
     }
 }

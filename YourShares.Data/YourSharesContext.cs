@@ -31,6 +31,18 @@ namespace YourShares.Data
         {
             _env = env;
         }
+        
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            // get the configuration from the app settings
+            var config = new ConfigurationBuilder()
+                .SetBasePath(_env.ContentRootPath)
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            // define the database to use
+            optionsBuilder.UseSqlServer(config.GetConnectionString("TuConnection"));
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,7 +54,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.CompanyId)
                     .HasColumnName("company_id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Address)
                     .HasColumnName("address")
@@ -229,7 +241,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.RoundId)
                     .HasColumnName("round_id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.CompanyId).HasColumnName("company_id");
 
@@ -249,7 +261,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.RoundInvestorId)
                     .HasColumnName("round_investor_id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.InvestedValue).HasColumnName("invested_value");
 
@@ -271,7 +283,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.ShareAccountId)
                     .HasColumnName("share_account_id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.ShareAmount).HasColumnName("share_amount");
 
@@ -296,7 +308,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.ShareholderId)
                     .HasColumnName("shareholder_id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.CompanyId).HasColumnName("company_id");
 
@@ -321,7 +333,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.TransactionId)
                     .HasColumnName("transaction_id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.ShareAccountId).HasColumnName("share_account_id");
 
@@ -362,7 +374,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.TransactionRequestId)
                     .HasColumnName("transaction_request_id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.ApproverId).HasColumnName("approver_id");
 
@@ -423,7 +435,7 @@ namespace YourShares.Data
 
                 entity.Property(e => e.UserProfileId)
                     .HasColumnName("user_profile_id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Address)
                     .HasColumnName("address")
@@ -449,18 +461,6 @@ namespace YourShares.Data
                     .HasMaxLength(15)
                     .IsUnicode(false);
             });
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            // get the configuration from the app settings
-            var config = new ConfigurationBuilder()
-                .SetBasePath(_env.ContentRootPath)
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            // define the database to use
-            optionsBuilder.UseSqlServer(config.GetConnectionString("LocalConnection"));
         }
     }
 }

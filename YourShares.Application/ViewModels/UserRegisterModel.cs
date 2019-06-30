@@ -1,6 +1,6 @@
 namespace YourShares.Application.ViewModels
 {
-    public class UserProfileCreateModel
+    public class UserRegisterModel
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
