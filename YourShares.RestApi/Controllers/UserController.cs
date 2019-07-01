@@ -75,7 +75,7 @@ namespace YourShares.RestApi.Controllers
         }
         #endregion
 
-        #region UpdateInfo
+        #region Update All profile
         /// <summary>
         ///     Updates the user information with details in the request body.
         /// </summary>
@@ -90,19 +90,36 @@ namespace YourShares.RestApi.Controllers
         }
         #endregion
 
-        #region UpdateEmail
+        #region Update patch field
         /// <summary>
-        ///     Updates the user email with details in the request body.
+        /// Update user profile info (email, phone, address)
         /// </summary>
-        /// <param name="model">The UserEditEmailModel.</param>
+        /// <param name="field">The field name to update</param>
+        /// <param name="value">The value of field to update</param>
         /// <returns></returns>
         [HttpPatch]
-        [Route("/api/users/email")]
-        public async Task UpdateInfo([FromBody] UserEditEmailModel model)
+        [Route("{field}")]
+        public async Task Update([FromRoute] string field, [FromQuery] string value)
         {
-            await _userProfileService.UpdateEmail(model);
-            Response.StatusCode = (int)HttpStatusCode.OK;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            switch (field)
+            {
+                case "email":
+                    await _userProfileService.UpdateEmail(Guid.Parse(userId), value);
+                    Response.StatusCode = (int) HttpStatusCode.OK;
+                    break;
+                case "phone":
+                    await _userProfileService.UpdateInfo(new UserEditInfoModel {Phone = value});
+                    Response.StatusCode = (int) HttpStatusCode.OK;
+                    break;
+                case "address":
+                    await _userProfileService.UpdateInfo(new UserEditInfoModel {Address = value});
+                    Response.StatusCode = (int) HttpStatusCode.OK;
+                    break;
+            }
         }
         #endregion
+        
+        
     }
 }

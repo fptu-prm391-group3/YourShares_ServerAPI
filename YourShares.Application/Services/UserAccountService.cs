@@ -31,7 +31,7 @@ namespace YourShares.Application.Services
 
         public async Task<bool> CreateUserAccount(UserAccountCreateModel model, Guid userProfileId)
         {
-            if (!ValidateUtils.IsMail(model.Email)) throw new MalformedEmailException();
+            if (!ValidateUtils.IsMail(model.Email)) throw new FormatException("Email invalid");
             if (model.Password.Length < 8) throw new FormatException("Password invalid");
             var passwordSalt = Guid.NewGuid();
             var data = HashingUtils.GetHashData(model.Password + passwordSalt);

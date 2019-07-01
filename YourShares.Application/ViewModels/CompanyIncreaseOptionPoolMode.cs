@@ -10,6 +10,6 @@ namespace YourShares.Application.ViewModels
         [Required]
         public Guid CompanyId { get; set; }
         [Required]
-        public long sharesAmount { get; set; }
+        public long SharesAmount { get; set; }
     }
 }

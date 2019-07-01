@@ -31,20 +31,27 @@ namespace YourShares.Application.Services
             _userProfileRepository = userProfileRepository;
         }
 
-        public async Task<bool> AddUserAsShareHolder(ShareHolderAddUserModel model, string currentUserId)
+        public async Task<Shareholder> AddUserAsShareHolder(ShareHolderAddUserModel model, string currentUserId)
         {
             var id = Guid.Parse(currentUserId);
+            if (!new List<string> {RefShareholderTypeCode.Founders, 
+                RefShareholderTypeCode.Shareholders, 
+                RefShareholderTypeCode.Employees}
+                .Contains(model.ShareholderType))
+            {
+                throw new FormatException("Invalid shareholder type");
+            }
             var company = _companyRepository.GetManyAsNoTracking(x => x.AdminProfileId == id && x.CompanyId == model.CompanyId);
             if (company == null) throw new EntityNotFoundException($"Company {model.CompanyId} not found");
             var shareholder = new Shareholder
             {
                 CompanyId = model.CompanyId,
                 UserProfileId = model.UserId,
-                ShareholderTypeCode = model.ShareholderType,
+                ShareholderTypeCode = model.ShareholderType
             };
-            _shareholderRepository.Insert(shareholder);
+            var inserted = _shareholderRepository.Insert(shareholder).Entity;
             await _unitOfWork.CommitAsync();
-            return true;
+            return inserted;
         }
 
         public async Task<List<ShareholderDetailModel>> GetByCompanyId(Guid id)

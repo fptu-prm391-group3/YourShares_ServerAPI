@@ -46,14 +46,14 @@ namespace YourShares.Application.Services
             };
         }
 
-        public async Task<UserLoginViewModel> GetUserByEmail(string email)
+        public async Task<UserAccount> GetUserByEmail(string email)
         {
             var profile = _userProfileRepository.GetManyAsNoTracking(x => email.Equals(x.Email)).FirstOrDefault();
             if (profile == null) throw new EntityNotFoundException("User Profile not found");
             var result = _userAccountRepository.GetManyAsNoTracking(y => y.UserProfileId.Equals(profile.UserProfileId))
                 .FirstOrDefault();
             if (result == null) throw new EntityNotFoundException("User Account not found. Try query in Google account");
-            return new UserLoginViewModel
+            return new UserAccount
             {
                 UserProfileId = result.UserProfileId,
                 Email = result.Email,
@@ -81,6 +81,16 @@ namespace YourShares.Application.Services
                 Address = profileModel.Address
             });
             return await _userAccountService.CreateUserAccount(accountModel, userProfile.Entity.UserProfileId);
+        }
+
+        public Task<bool> CreateGoogleProfile(UserRegisterModel profileModel, string googleAccountId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> CreateFacebookAccountProfile(UserRegisterModel profileModel, string facebookAccountId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<List<UserSearchViewModel>> SearchUser(UserSearchModel model)
@@ -111,16 +121,16 @@ namespace YourShares.Application.Services
             return result.ToList();
         }
 
-        public async Task<bool> UpdateEmail(UserEditEmailModel model)
+        public async Task<bool> UpdateEmail(Guid id, string email)
         {
-            var user = _userProfileRepository.GetById(model.UserId);
-            if (user == null) throw new EntityNotFoundException($"User id {model.UserId} not found");
-            if (!ValidateUtils.IsMail(model.email))
+            var user = _userProfileRepository.GetById(id);
+            if (user == null) throw new EntityNotFoundException($"User id {id} not found");
+            if (!ValidateUtils.IsMail(email))
             {
                 throw new FormatException($"Email is wrong format");
             }
 
-            user.Email = model.email;
+            user.Email = email;
             _userProfileRepository.Update(user);
             await _unitOfWork.CommitAsync();
             return true;
@@ -128,6 +138,7 @@ namespace YourShares.Application.Services
 
         public async Task<bool> UpdateInfo(UserEditInfoModel model)
         {
+            // TODO handle update email in user account, if google or facebook account don't allow update
             var user = _userProfileRepository.GetById(model.UserId);
             if (user == null) throw new EntityNotFoundException($"User id {model.UserId} not found");
             if (!ValidateUtils.IsNumber(model.Phone) || model.Phone.ToCharArray().Length != 10)
@@ -140,8 +151,8 @@ namespace YourShares.Application.Services
                 throw new FormatException($"Address not nullable");
             }
 
-            user.Address = model.Address;
-            user.Phone = model.Phone;
+            if (model.Address != null) user.Address = model.Address;
+            if (model.Phone != null) user.Phone = model.Phone;
             _userProfileRepository.Update(user);
             await _unitOfWork.CommitAsync();
             return true;

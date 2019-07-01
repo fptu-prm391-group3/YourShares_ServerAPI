@@ -114,7 +114,7 @@ namespace YourShares.Application.Services
 
         public async Task<List<SharesAccountViewModel>> ViewSharesAccountOfUserInCompany(ShareAccountGetDetailModel model)
         {
-            var TotalShares = (float)_companyRepository.GetById(model.CompanyId)?.TotalShares;
+            var totalShares = (float)_companyRepository.GetById(model.CompanyId).TotalShares;
 
             var query = _shareholderRepository.GetManyAsNoTracking(x =>
                          x.UserProfileId == model.UserId && x.CompanyId == model.CompanyId)
@@ -130,7 +130,7 @@ namespace YourShares.Application.Services
                 ShareAccountId = x.shareAccount.ShareAccountId,
                 ShareAmount = x.shareAccount.ShareAmount,
                 ShareAmountRatio = x.shareAccount.ShareTypeCode.Contains(RefShareTypeCode.Restricted)
-                            ? 0 : ((float)x.shareAccount.ShareAmount / TotalShares * 100),
+                            ? 0 : ((float)x.shareAccount.ShareAmount / totalShares * 100),
                 Name = x.shareAccount.ShareTypeCode.Contains(RefShareTypeCode.Restricted) ? "Restricted" : "Standard",
                 RatioConvert = x.shareAccount.ShareTypeCode.Contains(RefShareTypeCode.Restricted) ?
                             (float)_restrictedShareRepository.GetById(x.shareAccount.ShareAccountId).ConvertibleRatio : 0,
