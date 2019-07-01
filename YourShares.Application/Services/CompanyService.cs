@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using YourShares.Application.Exceptions;
 using YourShares.Application.Interfaces;
 using YourShares.Application.SearchModels;
@@ -31,39 +32,31 @@ namespace YourShares.Application.Services
             _shareAccountService = shareAccountService;
         }
 
-        public async Task<CompanyViewModel> CreateCompany(string userId, CompanyCreateModel model)
+        public async Task<Company> CreateCompany(string userId, CompanyCreateModel model)
         {
             if (ValidateUtils.IsNullOrEmpty(userId)) throw new UnauthorizedUser("User id is invalid");
             var company = new Company
             {
                 AdminProfileId = Guid.Parse(userId),
                 CompanyName = model.CompanyName,
+                CompanyDescription = model.CompanyDescription,
                 Address = model.Address,
                 Phone = model.Phone,
                 Capital = model.Capital,
                 TotalShares = model.TotalShares,
             };
-            var newCompany = _companyRepository.Insert(company);
+            var inserted = _companyRepository.Insert(company).Entity;
             await _unitOfWork.CommitAsync();
-            return new CompanyViewModel
-            {
-                Id = newCompany.Entity.CompanyId,
-                AdminUserId = newCompany.Entity.AdminProfileId,
-                CompanyName = newCompany.Entity.CompanyName,
-                Address = newCompany.Entity.Address,
-                Phone = newCompany.Entity.Phone,
-                Capital = newCompany.Entity.Capital,
-                TotalShares = newCompany.Entity.TotalShares,
-                OptionPoll = newCompany.Entity.OptionPollAmount
-            };
+            return inserted;
         }
 
-        public async Task<bool> UpdateCompany(CompanyUpdateModel model)
+        public async Task<bool> UpdateCompany(Guid id, CompanyUpdateModel model)
         {
             // TODO check editable permission with user id
-            var company = _companyRepository.GetById(model.CompanyId);
-            if (company == null) throw new EntityNotFoundException($"Company id {model.CompanyId} not found");
+            var company = _companyRepository.GetById(id);
+            if (company == null) throw new EntityNotFoundException($"Company id {id} not found");
             company.CompanyName = model.CompanyName;
+            company.CompanyDescription = model.CompanyDescription;
             company.Address = model.Address;
             company.Phone = model.Phone;
             company.Capital = model.Capital;
@@ -93,29 +86,21 @@ namespace YourShares.Application.Services
                     Capital = x.Capital,
                     CompanyId = x.CompanyId,
                     CompanyName = x.CompanyName,
+                    CompanyDescription = x.CompanyDescription,
                     OptionPoll = x.OptionPollAmount,
                     TotalShares = x.TotalShares,
-                }).OrderBy(sortField);
+                })
+                .OrderBy(sortField);
             var result = query.Skip((model.Page - 1) * model.PageSize)
                 .Take(model.PageSize);
             return result.ToList();
         }
 
-        public async Task<CompanyViewModel> GetById(Guid id)
+        public async Task<Company> GetById(Guid id)
         {
             var result = _companyRepository.GetById(id);
             if (result == null) throw new EntityNotFoundException($"Company id {id} not found");
-            return new CompanyViewModel
-            {
-                Id = result.CompanyId,
-                AdminUserId = result.AdminProfileId,
-                CompanyName = result.CompanyName,
-                Phone = result.Phone,
-                Address = result.Address,
-                Capital = result.Capital,
-                OptionPoll = result.OptionPollAmount,
-                TotalShares = result.TotalShares
-            };
+            return result;
         }
 
         public async Task<bool> DeleteById(Guid id)
@@ -130,10 +115,9 @@ namespace YourShares.Application.Services
         {
             var company = _companyRepository.GetById(model.CompanyId);
             if (company == null) throw new EntityNotFoundException($"Company id {model.CompanyId} not found");
-
-            // TODO save to round data
-            company.OptionPollAmount = company.OptionPollAmount + model.sharesAmount;
-            company.TotalShares += model.sharesAmount;
+            
+            company.OptionPollAmount += model.SharesAmount;
+            company.TotalShares += model.SharesAmount;
 
             _companyRepository.Update(company);
             await _unitOfWork.CommitAsync();

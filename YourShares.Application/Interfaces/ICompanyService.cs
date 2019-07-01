@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
+using YourShares.Domain.Models;
 
 namespace YourShares.Application.Interfaces
 {
@@ -22,21 +23,22 @@ namespace YourShares.Application.Interfaces
         /// <param name="userId"></param>
         /// <param name="model">The model.</param>
         /// <returns></returns>
-        Task<CompanyViewModel> CreateCompany(string userId, CompanyCreateModel model);
+        Task<Company> CreateCompany(string userId, CompanyCreateModel model);
 
         /// <summary>
         ///     Update the company information.
         /// </summary>
         /// <param name="model">The model.</param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        Task<bool> UpdateCompany(CompanyUpdateModel model);
+        Task<bool> UpdateCompany(Guid id, CompanyUpdateModel model);
 
         /// <summary>
         ///     Get the company by identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
-        Task<CompanyViewModel> GetById(Guid id);
+        Task<Company> GetById(Guid id);
 
         /// <summary>
         ///     Delete company by its identifier.

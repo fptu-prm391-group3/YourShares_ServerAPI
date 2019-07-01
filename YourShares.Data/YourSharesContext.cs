@@ -58,11 +58,14 @@ namespace YourShares.Data
 
                 entity.Property(e => e.Address)
                     .HasColumnName("address")
-                    .HasMaxLength(50);
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.AdminProfileId).HasColumnName("admin_profile_id");
 
                 entity.Property(e => e.Capital).HasColumnName("capital");
+
+                entity.Property(e => e.CompanyDescription)
+                    .HasColumnName("company_description");
 
                 entity.Property(e => e.CompanyName)
                     .IsRequired()

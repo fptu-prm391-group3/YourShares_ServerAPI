@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
 using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
+using YourShares.Domain.Models;
 using YourShares.RestApi.ApiResponse;
 
 namespace YourShares.RestApi.Controllers
@@ -41,11 +42,11 @@ namespace YourShares.RestApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<ResponseModel<CompanyViewModel>> GetById([FromRoute] Guid id)
+        public async Task<ResponseModel<Company>> GetById([FromRoute] Guid id)
         {
             var result = await _companyService.GetById(id);
             Response.StatusCode = (int)HttpStatusCode.OK;
-            return new ResponseBuilder<CompanyViewModel>().Success()
+            return new ResponseBuilder<Company>().Success()
                 .Data(result)
                 .Count(1)
                 .build();
@@ -54,7 +55,7 @@ namespace YourShares.RestApi.Controllers
 
         #region Search
         /// <summary>
-        ///     Search company by company name.
+        /// Search company by company name.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -64,7 +65,8 @@ namespace YourShares.RestApi.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var result = await _companyService.SearchCompany(userId, model);
             Response.StatusCode = (int)HttpStatusCode.OK;
-            return new ResponseBuilder<List<CompanyViewSearchModel>>().Success()
+            return new ResponseBuilder<List<CompanyViewSearchModel>>()
+                .Success()
                 .Data(result)
                 .Count(result.Count)
                 .build();
@@ -78,27 +80,31 @@ namespace YourShares.RestApi.Controllers
         /// <param name="model">The model.</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ResponseModel<CompanyViewModel>> CreateCompany([FromBody] CompanyCreateModel model)
+        public async Task<ResponseModel<Company>> CreateCompany([FromBody] CompanyCreateModel model)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var createdResult = await _companyService.CreateCompany(userId, model);
+            var result = await _companyService.CreateCompany(userId, model);
             Response.StatusCode = (int)HttpStatusCode.Created;
-            return new ResponseBuilder<CompanyViewModel>().Success()
-                .Data(createdResult)
+            return new ResponseBuilder<Company>()
+                .Success()
+                .Data(result)
                 .build();
         }
         #endregion
 
         #region Update
+
         /// <summary>
         ///     Updates the company with details in the request body.
         /// </summary>
+        /// <param name="id"></param>
         /// <param name="model">The model.</param>
         /// <returns></returns>
+        [Route("{id}")]
         [HttpPut]
-        public async Task UpdateCompany([FromBody] CompanyUpdateModel model)
+        public async Task UpdateCompany([FromRoute] Guid id, [FromBody] CompanyUpdateModel model)
         {
-            await _companyService.UpdateCompany(model);
+            await _companyService.UpdateCompany(id, model);
             Response.StatusCode = (int)HttpStatusCode.OK;
         }
         #endregion
