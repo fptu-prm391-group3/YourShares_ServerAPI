@@ -46,14 +46,14 @@ namespace YourShares.Application.Services
             };
         }
 
-        public async Task<UserLoginViewModel> GetUserByEmail(string email)
+        public async Task<UserAccount> GetUserByEmail(string email)
         {
             var profile = _userProfileRepository.GetManyAsNoTracking(x => email.Equals(x.Email)).FirstOrDefault();
             if (profile == null) throw new EntityNotFoundException("User Profile not found");
             var result = _userAccountRepository.GetManyAsNoTracking(y => y.UserProfileId.Equals(profile.UserProfileId))
                 .FirstOrDefault();
             if (result == null) throw new EntityNotFoundException("User Account not found. Try query in Google account");
-            return new UserLoginViewModel
+            return new UserAccount
             {
                 UserProfileId = result.UserProfileId,
                 Email = result.Email,
@@ -81,6 +81,16 @@ namespace YourShares.Application.Services
                 Address = profileModel.Address
             });
             return await _userAccountService.CreateUserAccount(accountModel, userProfile.Entity.UserProfileId);
+        }
+
+        public Task<bool> CreateGoogleProfile(UserRegisterModel profileModel, string googleAccountId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> CreateFacebookAccountProfile(UserRegisterModel profileModel, string facebookAccountId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<List<UserSearchViewModel>> SearchUser(UserSearchModel model)

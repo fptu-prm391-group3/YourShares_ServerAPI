@@ -15,7 +15,7 @@ namespace YourShares.Application.Interfaces
         /// <param name="userId"></param>
         /// <param name="model">The model.</param>
         /// <returns></returns>
-        Task<List<CompanyViewSearchModel>> SearchCompany(string userId, CompanySearchModel model);
+        Task<List<Company>> SearchCompany(string userId, CompanySearchModel model);
 
         /// <summary>
         ///     Create the specified model.

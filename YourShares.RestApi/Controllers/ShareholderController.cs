@@ -110,7 +110,7 @@ namespace YourShares.RestApi.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<bool> AddUserAsShareholder([FromBody] ShareHolderAddUserModel model)
+        public async Task<Shareholder> AddUserAsShareholder([FromBody] ShareHolderAddUserModel model)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return await _shareholderService.AddUserAsShareHolder(model, userId);

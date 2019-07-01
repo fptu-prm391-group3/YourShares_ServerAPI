@@ -43,16 +43,9 @@ namespace YourShares.RestApi.ApiResponse
             return this;
         }
 
-        public ResponseBuilder<T> NotFound(string errorMsg)
+        public ResponseBuilder<T> Fail(HttpStatusCode httpStatusCode, string errorMsg)
         {
-            _responseModel.ErrorCode = (int) HttpStatusCode.NotFound;
-            _responseModel.ErrorMessage = errorMsg;
-            return this;
-        }
-
-        public ResponseBuilder<T> BadRequest(string errorMsg)
-        {
-            _responseModel.ErrorCode = (int) HttpStatusCode.BadRequest;
+            _responseModel.ErrorCode = (int) httpStatusCode;
             _responseModel.ErrorMessage = errorMsg;
             return this;
         }

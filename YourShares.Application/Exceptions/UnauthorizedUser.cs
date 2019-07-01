@@ -7,9 +7,5 @@ namespace YourShares.Application.Exceptions
         public UnauthorizedUser()
         {
         }
-
-        public UnauthorizedUser(string message) : base(message)
-        {
-        }
     }
 }

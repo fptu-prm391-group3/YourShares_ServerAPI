@@ -34,7 +34,7 @@ namespace YourShares.Application.Services
 
         public async Task<Company> CreateCompany(string userId, CompanyCreateModel model)
         {
-            if (ValidateUtils.IsNullOrEmpty(userId)) throw new UnauthorizedUser("User id is invalid");
+            if (ValidateUtils.IsNullOrEmpty(userId)) throw new UnauthorizedUser();
             var company = new Company
             {
                 AdminProfileId = Guid.Parse(userId),
@@ -67,9 +67,9 @@ namespace YourShares.Application.Services
             return true;
         }
 
-        public async Task<List<CompanyViewSearchModel>> SearchCompany(string userId, CompanySearchModel model)
+        public async Task<List<Company>> SearchCompany(string userId, CompanySearchModel model)
         {
-            if (ValidateUtils.IsNullOrEmpty(userId)) throw new UnauthorizedUser("User id is invalid");
+            if (ValidateUtils.IsNullOrEmpty(userId)) throw new UnauthorizedUser();
             const string defaultSort = "CompanyName ASC";
             var sortType = model.IsSortDesc ? "DESC" : "ASC";
             var sortField = ValidateUtils.IsNullOrEmpty(model.SortField)
@@ -79,7 +79,7 @@ namespace YourShares.Application.Services
                     (ValidateUtils.IsNullOrEmpty(model.CompanyName)
                     || x.CompanyName.ToUpper().Contains(model.CompanyName.ToUpper()))
                     && x.AdminProfileId == Guid.Parse(userId)
-                ).Select(x => new CompanyViewSearchModel
+                ).Select(x => new Company
                 {
                     Address = x.Address,
                     Phone = x.Phone,
@@ -87,8 +87,8 @@ namespace YourShares.Application.Services
                     CompanyId = x.CompanyId,
                     CompanyName = x.CompanyName,
                     CompanyDescription = x.CompanyDescription,
-                    OptionPoll = x.OptionPollAmount,
-                    TotalShares = x.TotalShares,
+                    OptionPollAmount = x.OptionPollAmount,
+                    TotalShares = x.TotalShares
                 })
                 .OrderBy(sortField);
             var result = query.Skip((model.Page - 1) * model.PageSize)
