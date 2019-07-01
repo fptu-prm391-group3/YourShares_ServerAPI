@@ -11,7 +11,7 @@ namespace YourShares.Application.Interfaces
     {
         Task<bool> UpdateInfo(UserEditInfoModel model);
 
-        Task<bool> UpdateEmail(UserEditEmailModel model);
+        Task<bool> UpdateEmail(Guid id, string email);
 
         Task<UserViewDetailModel> GetById(Guid id);
 

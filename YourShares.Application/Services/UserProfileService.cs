@@ -121,16 +121,16 @@ namespace YourShares.Application.Services
             return result.ToList();
         }
 
-        public async Task<bool> UpdateEmail(UserEditEmailModel model)
+        public async Task<bool> UpdateEmail(Guid id, string email)
         {
-            var user = _userProfileRepository.GetById(model.UserId);
-            if (user == null) throw new EntityNotFoundException($"User id {model.UserId} not found");
-            if (!ValidateUtils.IsMail(model.email))
+            var user = _userProfileRepository.GetById(id);
+            if (user == null) throw new EntityNotFoundException($"User id {id} not found");
+            if (!ValidateUtils.IsMail(email))
             {
                 throw new FormatException($"Email is wrong format");
             }
 
-            user.Email = model.email;
+            user.Email = email;
             _userProfileRepository.Update(user);
             await _unitOfWork.CommitAsync();
             return true;
@@ -138,6 +138,7 @@ namespace YourShares.Application.Services
 
         public async Task<bool> UpdateInfo(UserEditInfoModel model)
         {
+            // TODO handle update email in user account, if google or facebook account don't allow update
             var user = _userProfileRepository.GetById(model.UserId);
             if (user == null) throw new EntityNotFoundException($"User id {model.UserId} not found");
             if (!ValidateUtils.IsNumber(model.Phone) || model.Phone.ToCharArray().Length != 10)
@@ -150,8 +151,8 @@ namespace YourShares.Application.Services
                 throw new FormatException($"Address not nullable");
             }
 
-            user.Address = model.Address;
-            user.Phone = model.Phone;
+            if (model.Address != null) user.Address = model.Address;
+            if (model.Phone != null) user.Phone = model.Phone;
             _userProfileRepository.Update(user);
             await _unitOfWork.CommitAsync();
             return true;
