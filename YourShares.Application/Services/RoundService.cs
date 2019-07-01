@@ -40,13 +40,14 @@ namespace YourShares.Application.Services
 
         public async Task<Round> InsertRound(RoundCreateModel model)
         {
-            var inserted = _roundRepository.Insert(new Round
+            var round = new Round
             {
                 Name = model.Name,
                 CompanyId = model.CompanyId,
                 PreRoundShares = model.PreRoundShares,
                 PostRoundShares = model.PostRoundShares
-            }).Entity;
+            };
+            var inserted = _roundRepository.Insert(round).Entity;
             await _unitOfWork.CommitAsync();
             return inserted;
         }

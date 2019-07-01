@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using YourShares.Application.Interfaces;
 using YourShares.Application.ViewModels;
+using YourShares.Domain.Models;
 using YourShares.Domain.Util;
 
 namespace YourShares.RestApi.Controllers
@@ -78,13 +79,16 @@ namespace YourShares.RestApi.Controllers
 
         [Route("oauth")]
         [HttpGet]
-        public async Task LoginWithOpenAuth([FromQuery] string auth)
+        public async Task LoginWithOpenAuth([FromQuery] string auth, [FromQuery] string id, [FromBody] UserRegisterModel model)
         {
+            // TODO Not implement yet
             switch (auth)
             {
                 case "google":
+                    await _userProfileService.CreateGoogleProfile(model, id);
                     break;
                 case "facebook":
+                    await _userProfileService.CreateFacebookAccountProfile(model, id);
                     break;
             }
             
@@ -92,7 +96,7 @@ namespace YourShares.RestApi.Controllers
 
         #region Build Token
 
-        private string BuildToken(UserLoginViewModel validLoginUserLogin)
+        private string BuildToken(UserAccount validLoginUserLogin)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

@@ -1,6 +1,3 @@
-DROP DATABASE yourshares
-GO
-
 CREATE DATABASE yourshares
 GO
 
@@ -95,6 +92,7 @@ CREATE TABLE yourshares.dbo.company (
   company_id uniqueidentifier NOT NULL,
   admin_profile_id uniqueidentifier NOT NULL,
   company_name nvarchar(50) NOT NULL,
+  company_description nvarchar(max),
   address nvarchar(50) NULL,
   phone varchar(15) NULL,
   capital bigint NOT NULL,

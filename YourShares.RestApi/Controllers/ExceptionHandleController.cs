@@ -32,21 +32,33 @@ namespace YourShares.RestApi.Controllers
 
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
-            var code = (int) HttpStatusCode.InternalServerError;
-            var errMsg = ex.Message;
+            HttpStatusCode httpStatus;
+            var errorMessage = ex.Message;
             switch (ex)
             {
                 case EntityNotFoundException _:
-                    code = (int) HttpStatusCode.NotFound;
+                    httpStatus = HttpStatusCode.NotFound;
+                    break;
+                case FormatException _ :
+                    httpStatus = HttpStatusCode.BadRequest;
+                    errorMessage = ex.Message;
                     break;
                 case DbUpdateException _:
-                    code = (int) HttpStatusCode.InternalServerError;
-                    errMsg = "Fail to update data. Database error occurs";
+                    httpStatus = HttpStatusCode.InternalServerError;
+                    errorMessage = "Fail to update data. Database error occurs";
+                    break;
+                case UnauthorizedUser _:
+                    httpStatus = HttpStatusCode.Unauthorized;
+                    errorMessage = "User unauthorized. Please try to login again";
+                    break;
+                default:
+                    httpStatus = HttpStatusCode.InternalServerError;
+                    errorMessage = ex.Message;
                     break;
             }
 
-            var response = new ResponseBuilder<dynamic>().NotFound(errMsg).build();
-            context.Response.StatusCode = code;
+            var response = new ResponseBuilder<dynamic>().Fail(httpStatus, errorMessage).build();
+            context.Response.StatusCode = (int) httpStatus;
             return context.Response.WriteAsync(JsonConvert.SerializeObject(response));
         }
     }
