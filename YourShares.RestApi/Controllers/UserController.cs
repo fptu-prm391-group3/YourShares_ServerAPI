@@ -46,11 +46,11 @@ namespace YourShares.RestApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/user/{id}")]
-        public async Task<ResponseModel<UserViewDetailModel>> GetById([FromRoute] Guid id)
+        public async Task<ResponseModel<UserProfile>> GetById([FromRoute] Guid id)
         {
             var result = await _userProfileService.GetById(id);
             Response.StatusCode = (int)HttpStatusCode.OK;
-            return new ResponseBuilder<UserViewDetailModel>().Success()
+            return new ResponseBuilder<UserProfile>().Success()
                 .Data(result)
                 .Count(1)
                 .build();
