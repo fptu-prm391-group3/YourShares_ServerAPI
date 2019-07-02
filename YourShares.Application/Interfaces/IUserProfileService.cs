@@ -22,7 +22,7 @@ namespace YourShares.Application.Interfaces
 
         Task<bool> UpdateInfo(UserEditInfoModel model);
 
-        Task<UserViewDetailModel> GetById(Guid id);
+        Task<UserProfile> GetById(Guid id);
 
         Task<List<UserSearchViewModel>> SearchUser(UserSearchModel model);
 

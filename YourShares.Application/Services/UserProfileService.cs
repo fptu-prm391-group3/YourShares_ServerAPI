@@ -31,19 +31,11 @@ namespace YourShares.Application.Services
             _userAccountService = userAccountService;
         }
 
-        public async Task<UserViewDetailModel> GetById(Guid id)
+        public async Task<UserProfile> GetById(Guid id)
         {
             var user = _userProfileRepository.GetById(id);
             if (user == null) throw new EntityNotFoundException($"User id {id} not found");
-
-            return new UserViewDetailModel
-            {
-                UserId = user.UserProfileId,
-                Address = user.Address,
-                Email = user.Email,
-                Name = $"{user.FirstName} {user.LastName}",
-                Phone = user.Phone
-            };
+            return user;
         }
 
         public async Task<UserAccount> GetUserByEmail(string email)
