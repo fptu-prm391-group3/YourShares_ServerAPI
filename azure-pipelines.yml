@@ -37,6 +37,7 @@ steps:
     versioningScheme: 'off'
 
 - task: SonarQubeAnalyze@4
+  continueOnError: true
 
 - task: SonarQubePublish@4
   inputs:
