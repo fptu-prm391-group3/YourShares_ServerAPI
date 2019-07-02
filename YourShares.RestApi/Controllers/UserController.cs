@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using YourShares.Domain.Util;
+using YourShares.Domain.Models;
 
 namespace YourShares.RestApi.Controllers
 {
@@ -92,34 +93,54 @@ namespace YourShares.RestApi.Controllers
 
         #region Update patch field
         /// <summary>
-        /// Update user profile info (email, phone, address)
+        /// Update user profile info (email, phone, address, firstName, lastName)
         /// </summary>
         /// <param name="field">The field name to update</param>
         /// <param name="value">The value of field to update</param>
         /// <returns></returns>
         [HttpPatch]
         [Route("{field}")]
-        public async Task Update([FromRoute] string field, [FromQuery] string value)
+        public async Task<ResponseModel<UserProfile>> Update([FromRoute] string field, [FromQuery] string value)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             switch (field)
             {
                 case "email":
-                    await _userProfileService.UpdateEmail(Guid.Parse(userId), value);
-                    Response.StatusCode = (int) HttpStatusCode.OK;
-                    break;
+                    var result = await _userProfileService.UpdateEmail(Guid.Parse(userId), value);
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return new ResponseBuilder<UserProfile>().Success()
+                    .Data(result)
+                    .build();
                 case "phone":
-                    await _userProfileService.UpdateInfo(new UserEditInfoModel {Phone = value});
-                    Response.StatusCode = (int) HttpStatusCode.OK;
-                    break;
+                    var result1 = await _userProfileService.UpdatePhone(Guid.Parse(userId), value);
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return new ResponseBuilder<UserProfile>().Success()
+                    .Data(result1)
+                    .build();
                 case "address":
-                    await _userProfileService.UpdateInfo(new UserEditInfoModel {Address = value});
-                    Response.StatusCode = (int) HttpStatusCode.OK;
-                    break;
+                    var result2 = await _userProfileService.UpdateAddress(Guid.Parse(userId), value);
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return new ResponseBuilder<UserProfile>().Success()
+                    .Data(result2)
+                    .build();
+                case "firstName":
+                    var result3 = await _userProfileService.UpdateFirstName(Guid.Parse(userId), value);
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return new ResponseBuilder<UserProfile>().Success()
+                    .Data(result3)
+                    .build();
+                case "lastName":
+                    var result4 = await _userProfileService.UpdateLastName(Guid.Parse(userId), value);
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return new ResponseBuilder<UserProfile>().Success()
+                    .Data(result4)
+                    .build();
+                default:
+                    return null;
             }
         }
         #endregion
-        
-        
+
+
     }
 }
