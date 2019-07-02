@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -62,11 +63,13 @@ namespace YourShares.RestApi
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
             else
+            {
+                // use exception handle middleware
+                app.UseMiddleware(typeof(ExceptionHandleController));
                 app.UseHsts();
-            // app.UseHttpsRedirection();
+                // app.UseHttpsRedirection();
+            }
             app.UseAuthentication();
-            // use exception handle middleware
-            //app.UseMiddleware(typeof(ExceptionHandleController));
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "YourShares API"); });

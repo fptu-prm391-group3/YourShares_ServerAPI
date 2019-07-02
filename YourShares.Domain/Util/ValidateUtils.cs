@@ -13,26 +13,21 @@ namespace YourShares.Domain.Util
 
         public static bool IsNullOrEmpty(Guid data)
         {
-            if (data == null || data == Guid.Empty)
-            {
-                return true;
-            }
-
-            return false;
+            return data == Guid.Empty;
         }
 
-        public static bool IsNumber(String data)
+        public static bool IsNumber(string data)
         {
             long check = 0;
-            bool isNumber = long.TryParse(data, out check);
+            var isNumber = long.TryParse(data, out check);
             return isNumber;
         }
 
-        public static bool IsMail(string emailaddress)
+        public static bool IsMail(string emailAddress)
         {
             try
             {
-                MailAddress m = new MailAddress(emailaddress);
+                var m = new MailAddress(emailAddress);
 
                 return true;
             }
@@ -44,7 +39,7 @@ namespace YourShares.Domain.Util
 
         public static bool IsPhone(string phone)
         {
-            Regex regex = new Regex(@"^(\+)?[0-9]{8,12}$");
+            var regex = new Regex(@"^(\+)?[0-9]{8,12}$");
             return regex.IsMatch(phone);
         }
     }

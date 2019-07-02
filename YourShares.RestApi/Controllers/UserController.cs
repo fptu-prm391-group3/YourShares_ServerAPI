@@ -13,6 +13,8 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using YourShares.Domain.Util;
+using YourShares.Domain.Models;
 
 namespace YourShares.RestApi.Controllers
 {
@@ -23,36 +25,39 @@ namespace YourShares.RestApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserProfileService _userProfileService;
-        private readonly IConfiguration _configuration;
+
+        #region Constructor
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserController" /> class.
         /// </summary>
         /// <param name="userProfileService">The User profile service.</param>
-        /// <param name="configuration">Configuration from appsettings.json</param>
         /// <returns></returns>
-        public UserController(IUserProfileService userProfileService, IConfiguration configuration)
+        public UserController(IUserProfileService userProfileService)
         {
             _userProfileService = userProfileService;
-            _configuration = configuration;
         }
+        #endregion
 
+        #region GetById
         /// <summary>
         ///     Gets User specified by its identifier.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [Route("/api/user/{id}")]
-        public async Task<ResponseModel<UserViewDetailModel>> GetUserById([FromRoute] Guid id)
+        public async Task<ResponseModel<UserProfile>> GetById([FromRoute] Guid id)
         {
             var result = await _userProfileService.GetById(id);
-            Response.StatusCode = (int) HttpStatusCode.OK;
-            return new ResponseBuilder<UserViewDetailModel>().Success()
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<UserProfile>().Success()
                 .Data(result)
                 .Count(1)
                 .build();
         }
+        #endregion
 
+        #region Search
         /// <summary>
         ///     Search User by Email, Phone, Name.
         /// </summary>
@@ -63,106 +68,79 @@ namespace YourShares.RestApi.Controllers
             [FromQuery] UserSearchModel model)
         {
             var result = await _userProfileService.SearchUser(model);
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
             return new ResponseBuilder<List<UserSearchViewModel>>().Success()
                 .Data(result)
                 .Count(result.Count)
                 .build();
         }
+        #endregion
 
-
+        #region Update All profile
         /// <summary>
         ///     Updates the user information with details in the request body.
         /// </summary>
         /// <param name="model">The UserEditInfoModel.</param>
         /// <returns></returns>
         [HttpPut]
-        [Route("/api/user/information")]
+        [Route("/api/users")]
         public async Task UpdateInfo([FromBody] UserEditInfoModel model)
         {
             await _userProfileService.UpdateInfo(model);
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
         }
+        #endregion
 
+        #region Update patch field
         /// <summary>
-        ///     Updates the user email with details in the request body.
+        /// Update user profile info (email, phone, address, firstName, lastName)
         /// </summary>
-        /// <param name="model">The UserEditEmailModel.</param>
+        /// <param name="field">The field name to update</param>
+        /// <param name="value">The value of field to update</param>
         /// <returns></returns>
-        [HttpPut]
-        [Route("/api/user/email")]
-        public async Task UpdateInfo([FromBody] UserEditEmailModel model)
+        [HttpPatch]
+        [Route("{field}")]
+        public async Task<ResponseModel<UserProfile>> Update([FromRoute] string field, [FromQuery] string value)
         {
-            await _userProfileService.UpdateEmail(model);
-            Response.StatusCode = (int) HttpStatusCode.OK;
-        }
-
-        /// <summary>
-        /// Register a user account in system.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [AllowAnonymous]
-        [HttpPost]
-        public async Task Register([FromBody] UserCreateViewModel model)
-        {
-            await _userProfileService.CreateUserProfile(new UserProfileCreateModel
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            switch (field)
             {
-                Email = model.Email,
-                Phone = model.Phone,
-                Address = model.Address,
-                LastName = model.LastName,
-                FirstName = model.FirstName
-            }, new UserAccountCreateModel
-            {
-                Email = model.Email,
-                Password = model.Password
-            });
-        }
-
-        /// <summary>
-        /// Login to system with a system account.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [AllowAnonymous]
-        [HttpPost]
-        [Route("auth")]
-        public async Task<UserLoginTokenModel> LoginWithEmail([FromBody] UserLoginModel model)
-        {
-            var user = await _userProfileService.GetUserByEmail(model.Email);
-            if (model.Password == user.PasswordHash)
-            {
-                Response.StatusCode = (int) HttpStatusCode.OK;
-                var token = BuildToken(user);
-                return new UserLoginTokenModel
-                {
-                    UserId = user.UserProfileId.ToString(),
-                    Jwt = token
-                };
+                case "email":
+                    var result = await _userProfileService.UpdateEmail(Guid.Parse(userId), value);
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return new ResponseBuilder<UserProfile>().Success()
+                    .Data(result)
+                    .build();
+                case "phone":
+                    var result1 = await _userProfileService.UpdatePhone(Guid.Parse(userId), value);
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return new ResponseBuilder<UserProfile>().Success()
+                    .Data(result1)
+                    .build();
+                case "address":
+                    var result2 = await _userProfileService.UpdateAddress(Guid.Parse(userId), value);
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return new ResponseBuilder<UserProfile>().Success()
+                    .Data(result2)
+                    .build();
+                case "firstName":
+                    var result3 = await _userProfileService.UpdateFirstName(Guid.Parse(userId), value);
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return new ResponseBuilder<UserProfile>().Success()
+                    .Data(result3)
+                    .build();
+                case "lastName":
+                    var result4 = await _userProfileService.UpdateLastName(Guid.Parse(userId), value);
+                    Response.StatusCode = (int)HttpStatusCode.OK;
+                    return new ResponseBuilder<UserProfile>().Success()
+                    .Data(result4)
+                    .build();
+                default:
+                    return null;
             }
-
-            Response.StatusCode = (int) HttpStatusCode.BadRequest;
-            return null;
         }
+        #endregion
 
-        private string BuildToken(UserLoginViewModel validLoginUserLogin)
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, validLoginUserLogin.UserProfileId.ToString()),
-                new Claim(ClaimTypes.Email, validLoginUserLogin.Email) 
-            };
 
-            var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
-                _configuration["Jwt:Audience"],
-                claims,
-                expires: DateTime.Now.AddDays(int.Parse(_configuration["Jwt:ExpiredDays"])),
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
     }
 }

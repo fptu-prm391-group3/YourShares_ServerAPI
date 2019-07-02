@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace YourShares.RestApi.Models
+namespace YourShares.Domain.Models
 {
     public partial class UserAccount
     {
@@ -9,8 +8,9 @@ namespace YourShares.RestApi.Models
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public string PasswordHashAlgorithm { get; set; }
-        public string PasswordReminderToken { get; set; }
-        public string EmailConfirmationToken { get; set; }
+        public Guid PasswordSalt { get; set; }
         public string UserAccountStatusCode { get; set; }
+
+        public virtual RefUserAccountStatusCode UserAccountStatusCodeNavigation { get; set; }
     }
 }

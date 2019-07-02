@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using YourShares.Application.Exceptions;
 using YourShares.Application.Interfaces;
@@ -7,7 +8,6 @@ using YourShares.Data.Interfaces;
 using YourShares.Data.UoW;
 using YourShares.Domain.Models;
 using YourShares.Domain.Util;
-using YourShares.RestApi.Models;
 
 namespace YourShares.Application.Services
 {
@@ -31,16 +31,18 @@ namespace YourShares.Application.Services
 
         public async Task<bool> CreateUserAccount(UserAccountCreateModel model, Guid userProfileId)
         {
-            if (!ValidateUtils.IsMail(model.Email)) throw new MalformedEmailException();
+            if (!ValidateUtils.IsMail(model.Email)) throw new FormatException("Email invalid");
             if (model.Password.Length < 8) throw new FormatException("Password invalid");
+            var passwordSalt = Guid.NewGuid();
+            var data = HashingUtils.GetHashData(model.Password + passwordSalt);
             _userAccountRepository.Insert(new UserAccount
             {
                 Email = model.Email,
-                PasswordHash = model.Password,
-                // TODO Hash password
-                PasswordHashAlgorithm = "HASH",
+                PasswordHash = data.DataHashed,
+                PasswordHashAlgorithm = data.HashType,
                 UserProfileId = userProfileId,
-                UserAccountStatusCode = RefUserAccountStatusCode.GUEST
+                PasswordSalt = passwordSalt,
+                UserAccountStatusCode = RefUserAccountStatusCode.Guest
             });
             await _unitOfWork.CommitAsync();
             return true;
