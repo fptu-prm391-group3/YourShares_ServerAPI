@@ -2,6 +2,8 @@
 
 > Server side api for `YourShares` application.
 
+[![Build Status](https://dev.azure.com/caovanphu19980307/YourShares/_apis/build/status/fptu-se1269-group3.YourShares_ServerAPI?branchName=master)](https://dev.azure.com/caovanphu19980307/YourShares/_build/latest?definitionId=4&branchName=master)
+
 ## Table of Contents
 
 * [Overall Description](#Overall-Description)
