@@ -121,7 +121,7 @@ namespace YourShares.Application.Services
             return result.ToList();
         }
 
-        public async Task<bool> UpdateEmail(Guid id, string email)
+        public async Task<UserProfile> UpdateEmail(Guid id, string email)
         {
             var user = _userProfileRepository.GetById(id);
             if (user == null) throw new EntityNotFoundException($"User id {id} not found");
@@ -133,7 +133,63 @@ namespace YourShares.Application.Services
             user.Email = email;
             _userProfileRepository.Update(user);
             await _unitOfWork.CommitAsync();
-            return true;
+            return user;
+        }
+
+        public async Task<UserProfile> UpdateLastName(Guid id, string lastName)
+        {
+            var user = _userProfileRepository.GetById(id);
+            if (user == null) throw new EntityNotFoundException($"User id {id} not found");
+            if (ValidateUtils.IsNullOrEmpty(lastName))
+            {
+                throw new FormatException($"lastName not nullable");
+            }
+            user.LastName = lastName;
+            _userProfileRepository.Update(user);
+            await _unitOfWork.CommitAsync();
+            return user;
+        }
+
+        public async Task<UserProfile> UpdateFirstName(Guid id, string firstName)
+        {
+            var user = _userProfileRepository.GetById(id);
+            if (user == null) throw new EntityNotFoundException($"User id {id} not found");
+            if (ValidateUtils.IsNullOrEmpty(firstName))
+            {
+                throw new FormatException($"firstName not nullable");
+            }
+            user.FirstName = firstName;
+            _userProfileRepository.Update(user);
+            await _unitOfWork.CommitAsync();
+            return user;
+        }
+
+        public async Task<UserProfile> UpdateAddress(Guid id, string address)
+        {
+            var user = _userProfileRepository.GetById(id);
+            if (user == null) throw new EntityNotFoundException($"User id {id} not found");
+            if (ValidateUtils.IsNullOrEmpty(address))
+            {
+                throw new FormatException($"Address not nullable");
+            }
+            user.Address = address;
+            _userProfileRepository.Update(user);
+            await _unitOfWork.CommitAsync();
+            return user;
+        }
+
+        public async Task<UserProfile> UpdatePhone(Guid id, string phone)
+        {
+            var user = _userProfileRepository.GetById(id);
+            if (user == null) throw new EntityNotFoundException($"User id {id} not found");
+            if (!ValidateUtils.IsNumber(phone) || phone.ToCharArray().Length != 10)
+            {
+                throw new FormatException($"{phone} is wrong format");
+            }
+            user.Phone = phone;
+            _userProfileRepository.Update(user);
+            await _unitOfWork.CommitAsync();
+            return user;
         }
 
         public async Task<bool> UpdateInfo(UserEditInfoModel model)
