@@ -14,13 +14,6 @@ variables:
 
 steps:
 
-- task: SonarQubePrepare@4
-  inputs:
-    SonarQube: 'sonar'
-    scannerMode: 'MSBuild'
-    projectKey: 'yourshares'
-    projectName: 'Your Shares'
-
 - task: DotNetCoreCLI@2
   inputs:
     command: 'restore'
@@ -35,12 +28,6 @@ steps:
     arguments: '--configuration $(BuildConfiguration)'
     feedsToUse: 'select'
     versioningScheme: 'off'
-
-- task: SonarQubeAnalyze@4
-
-- task: SonarQubePublish@4
-  inputs:
-    pollingTimeoutSec: '300'
 
 - task: DotNetCoreCLI@2
   inputs:
