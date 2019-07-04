@@ -19,16 +19,20 @@ namespace YourShares.Application.Services
         private readonly IRepository<UserProfile> _userProfileRepository;
         private readonly IRepository<UserAccount> _userAccountRepository;
         private readonly IUserAccountService _userAccountService;
+        private readonly IFacebookAccountService _facebookAccountService;
+        private readonly IUserGoogleAccountService _googleAccountService;
         private readonly IUnitOfWork _unitOfWork;
 
         public UserProfileService(IUnitOfWork unitOfWork
             , IRepository<UserProfile> userProfileRepository,
-            IRepository<UserAccount> userAccountRepository, IUserAccountService userAccountService)
+            IRepository<UserAccount> userAccountRepository, IUserAccountService userAccountService, IUserGoogleAccountService googleAccountService, IFacebookAccountService facebookAccountService)
         {
             _unitOfWork = unitOfWork;
             _userProfileRepository = userProfileRepository;
             _userAccountRepository = userAccountRepository;
             _userAccountService = userAccountService;
+            _googleAccountService = googleAccountService;
+            _facebookAccountService = facebookAccountService;
         }
 
         public async Task<UserProfile> GetById(Guid id)
@@ -75,14 +79,28 @@ namespace YourShares.Application.Services
             return await _userAccountService.CreateUserAccount(accountModel, userProfile.Entity.UserProfileId);
         }
 
-        public Task<bool> CreateGoogleProfile(UserRegisterModel profileModel, string googleAccountId)
+        public Task<bool> CreateGoogleProfile(OAuthCreateModel profileModel)
         {
-            throw new NotImplementedException();
+            var userProfile = new UserProfile
+            {
+                Email = profileModel.Email,
+                FirstName = profileModel.FirstName,
+                LastName = profileModel.LastName
+            };
+            var inserted = _userProfileRepository.Insert(userProfile).Entity;
+            return _googleAccountService.CreateGoogleAccount(inserted.UserProfileId, profileModel.AccountId);
         }
 
-        public Task<bool> CreateFacebookAccountProfile(UserRegisterModel profileModel, string facebookAccountId)
+        public Task<bool> CreateFacebookProfile(OAuthCreateModel profileModel)
         {
-            throw new NotImplementedException();
+            var userProfile = new UserProfile
+            {
+                Email = profileModel.Email,
+                FirstName = profileModel.FirstName,
+                LastName = profileModel.LastName
+            };
+            var inserted = _userProfileRepository.Insert(userProfile).Entity;
+            return _facebookAccountService.CreateFacebookAccount(inserted.UserProfileId, profileModel.AccountId);
         }
 
         public async Task<List<UserSearchViewModel>> SearchUser(UserSearchModel model)
