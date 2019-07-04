@@ -30,8 +30,8 @@ namespace YourShares.Application.Interfaces
 
         Task<bool> CreateUserProfile(UserRegisterModel profileModel, UserAccountCreateModel accountCreateModel);
 
-        Task<bool> CreateGoogleProfile(UserRegisterModel profileModel, string googleAccountId);
+        Task<bool> CreateGoogleProfile(OAuthCreateModel profileModel);
 
-        Task<bool> CreateFacebookAccountProfile(UserRegisterModel profileModel, string facebookAccountId);
+        Task<bool> CreateFacebookProfile(OAuthCreateModel profileModel);
     }
 }
