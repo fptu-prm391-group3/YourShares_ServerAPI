@@ -27,6 +27,7 @@ namespace YourShares.IoC
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IShareholderService, ShareholderService>();
             services.AddTransient<ISharesAccountService, SharesAccountService>();
+            services.AddTransient<ITransactionService, TransactionService>();
             services.AddTransient<IRoundService, RoundService>();
             services.AddTransient<IRoundInvestorService, RoundInvestorService>();
             services.AddTransient<IRetrictedSharesService, RetrictedSharesService>();

@@ -45,7 +45,7 @@ namespace YourShares.RestApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("/api/user/{id}")]
+        [Route("{id}")]
         public async Task<ResponseModel<UserProfile>> GetById([FromRoute] Guid id)
         {
             var result = await _userProfileService.GetById(id);
