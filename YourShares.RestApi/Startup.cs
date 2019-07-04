@@ -67,7 +67,7 @@ namespace YourShares.RestApi
                 // use exception handle middleware
                 app.UseMiddleware(typeof(ExceptionHandleController));
                 app.UseHsts();
-                // app.UseHttpsRedirection();
+                app.UseHttpsRedirection();
             }
             app.UseAuthentication();
             app.UseMvc();
