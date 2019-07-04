@@ -25,7 +25,8 @@ namespace YourShares.Application.Services
 
         public UserProfileService(IUnitOfWork unitOfWork
             , IRepository<UserProfile> userProfileRepository,
-            IRepository<UserAccount> userAccountRepository, IUserAccountService userAccountService, IUserGoogleAccountService googleAccountService, IFacebookAccountService facebookAccountService)
+            IRepository<UserAccount> userAccountRepository, IUserAccountService userAccountService,
+            IUserGoogleAccountService googleAccountService, IFacebookAccountService facebookAccountService)
         {
             _unitOfWork = unitOfWork;
             _userProfileRepository = userProfileRepository;
@@ -48,7 +49,8 @@ namespace YourShares.Application.Services
             if (profile == null) throw new EntityNotFoundException("User Profile not found");
             var result = _userAccountRepository.GetManyAsNoTracking(y => y.UserProfileId.Equals(profile.UserProfileId))
                 .FirstOrDefault();
-            if (result == null) throw new EntityNotFoundException("User Account not found. Try query in Google account");
+            if (result == null)
+                throw new EntityNotFoundException("User Account not found. Try query in Google account");
             return new UserAccount
             {
                 UserProfileId = result.UserProfileId,
@@ -56,7 +58,6 @@ namespace YourShares.Application.Services
                 PasswordHash = result.PasswordHash,
                 PasswordHashAlgorithm = result.PasswordHashAlgorithm,
                 PasswordSalt = result.PasswordSalt
-
             };
         }
 
@@ -67,7 +68,7 @@ namespace YourShares.Application.Services
             if (!ValidateUtils.IsPhone(profileModel.Phone)) throw new FormatException("Phone number invalid");
 
             var query = _userProfileRepository.GetManyAsNoTracking(x => x.Email.Equals(profileModel.Email));
-            if(query.ToList().Count!=0) throw new FormatException("Email Exited");
+            if (query.ToList().Count != 0) throw new FormatException("Email Exited");
             var userProfile = _userProfileRepository.Insert(new UserProfile
             {
                 Email = profileModel.Email,
@@ -79,8 +80,13 @@ namespace YourShares.Application.Services
             return await _userAccountService.CreateUserAccount(accountModel, userProfile.Entity.UserProfileId);
         }
 
-        public Task<bool> CreateGoogleProfile(OAuthCreateModel profileModel)
+        public async Task<bool> CreateGoogleProfile(OAuthCreateModel profileModel)
         {
+            var googleAccount = await _googleAccountService.GetByGoogleId(profileModel.AccountId);
+             if (googleAccount != null)
+             {
+                 return false;
+             }
             var userProfile = new UserProfile
             {
                 Email = profileModel.Email,
@@ -88,11 +94,16 @@ namespace YourShares.Application.Services
                 LastName = profileModel.LastName
             };
             var inserted = _userProfileRepository.Insert(userProfile).Entity;
-            return _googleAccountService.CreateGoogleAccount(inserted.UserProfileId, profileModel.AccountId);
+            return await _googleAccountService.CreateGoogleAccount(inserted.UserProfileId, profileModel.AccountId);
         }
 
-        public Task<bool> CreateFacebookProfile(OAuthCreateModel profileModel)
+        public async Task<bool> CreateFacebookProfile(OAuthCreateModel profileModel)
         {
+            var facebookAccount =  await _facebookAccountService.GetByFacebookId(profileModel.AccountId);
+            if (facebookAccount != null)
+            {
+                return false;
+            }
             var userProfile = new UserProfile
             {
                 Email = profileModel.Email,
@@ -100,7 +111,7 @@ namespace YourShares.Application.Services
                 LastName = profileModel.LastName
             };
             var inserted = _userProfileRepository.Insert(userProfile).Entity;
-            return _facebookAccountService.CreateFacebookAccount(inserted.UserProfileId, profileModel.AccountId);
+            return await _facebookAccountService.CreateFacebookAccount(inserted.UserProfileId, profileModel.AccountId);
         }
 
         public async Task<List<UserSearchViewModel>> SearchUser(UserSearchModel model)
@@ -154,6 +165,7 @@ namespace YourShares.Application.Services
             {
                 throw new FormatException($"lastName not nullable");
             }
+
             user.LastName = lastName;
             _userProfileRepository.Update(user);
             await _unitOfWork.CommitAsync();
@@ -168,6 +180,7 @@ namespace YourShares.Application.Services
             {
                 throw new FormatException($"firstName not nullable");
             }
+
             user.FirstName = firstName;
             _userProfileRepository.Update(user);
             await _unitOfWork.CommitAsync();
@@ -182,6 +195,7 @@ namespace YourShares.Application.Services
             {
                 throw new FormatException($"Address not nullable");
             }
+
             user.Address = address;
             _userProfileRepository.Update(user);
             await _unitOfWork.CommitAsync();
@@ -196,6 +210,7 @@ namespace YourShares.Application.Services
             {
                 throw new FormatException($"{phone} is wrong format");
             }
+
             user.Phone = phone;
             _userProfileRepository.Update(user);
             await _unitOfWork.CommitAsync();

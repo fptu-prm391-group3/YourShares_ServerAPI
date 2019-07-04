@@ -24,15 +24,9 @@ namespace YourShares.Application.Services
             return _facebookAccountRepository.GetById(id);
         }
 
-        public Task<FacebookAccount> GetByFacebookId(string id)
+        public async Task<FacebookAccount> GetByFacebookId(string id)
         {
-            var result =_facebookAccountRepository.GetManyAsNoTracking(x => x.FacebookAccountId.Equals(id)).FirstOrDefault();
-            if (result == null)
-            {
-                throw new EntityNotFoundException();
-            }
-
-            return result;
+            return _facebookAccountRepository.GetManyAsNoTracking(x => x.FacebookAccountId.Equals(id)).FirstOrDefault();
         }
 
         public async Task<bool> CreateFacebookAccount(Guid userProfileId, string facebookAccountId)

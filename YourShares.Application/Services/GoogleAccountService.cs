@@ -26,12 +26,7 @@ namespace YourShares.Application.Services
 
         public async Task<GoogleAccount> GetByGoogleId(string id)
         {
-            var result = _googleAccountRepository.GetManyAsNoTracking(x => x.GoogleAccountId.Equals(id)).FirstOrDefault();
-            if (result == null)
-            {
-                throw new EntityNotFoundException();
-            }
-            return result;
+            return _googleAccountRepository.GetManyAsNoTracking(x => x.GoogleAccountId.Equals(id)).FirstOrDefault();
         }
 
         public async Task<bool> CreateGoogleAccount(Guid userProfileId, string googleAccountId)

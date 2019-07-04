@@ -91,6 +91,7 @@ namespace YourShares.RestApi.Controllers
         #endregion
 
         #region Login with Open Auth
+
         /// <summary>
         /// Login with open authentication. If first login, redirect to create
         /// </summary>
@@ -101,51 +102,49 @@ namespace YourShares.RestApi.Controllers
         [HttpGet]
         public async Task<UserLoginTokenModel> LoginWithOpenAuth([FromQuery] string auth, [FromQuery] string id)
         {
+            UserProfile user;
             switch (auth)
             {
                 case "google":
-                    try
+                    var googleAccount = await _googleAccountService.GetByGoogleId(id);
+                    if (googleAccount == null)
                     {
-                        var googleAccount = await _googleAccountService.GetByGoogleId(id);
-                        Response.StatusCode = (int) HttpStatusCode.OK;
-                        var user = await _userProfileService.GetById(googleAccount.UserProfileId);
-                        var token = BuildToken(user.UserProfileId, user.Email);
-                        return new UserLoginTokenModel
-                        {
-                            UserId = user.UserProfileId.ToString(),
-                            Jwt = token
-                        };
-                    }
-                    catch (EntityNotFoundException)
-                    {
-                        Response.StatusCode = (int) HttpStatusCode.RedirectMethod;
+                        Response.StatusCode = (int) HttpStatusCode.Accepted;
                         return null;
                     }
+
+                    Response.StatusCode = (int) HttpStatusCode.OK;
+                    user = await _userProfileService.GetById(googleAccount.UserProfileId);
+                    break;
                 case "facebook":
-                    try
+                    var facebookAccount = await _facebookAccountService.GetByFacebookId(id);
+                    if (facebookAccount == null)
                     {
-                        var facebookAccount = await _facebookAccountService.GetByFacebookId(id);
-                        Response.StatusCode = (int) HttpStatusCode.OK;
-                        var user = await _userProfileService.GetById(facebookAccount.UserProfileId);
-                        var token = BuildToken(user.UserProfileId, user.Email);
-                        return new UserLoginTokenModel
-                        {
-                            UserId = user.UserProfileId.ToString(),
-                            Jwt = token
-                        };
-                    }
-                    catch (EntityNotFoundException)
-                    {
-                        Response.StatusCode = (int) HttpStatusCode.RedirectMethod;
+                        Response.StatusCode = (int) HttpStatusCode.Accepted;
                         return null;
                     }
+
+                    Response.StatusCode = (int) HttpStatusCode.OK;
+                    user = await _userProfileService.GetById(facebookAccount.UserProfileId);
+                    break;
+                default:
+                    Response.StatusCode = (int) HttpStatusCode.NoContent;
+                    return null;
             }
-            Response.StatusCode = (int) HttpStatusCode.NoContent;
-            return null;
+
+            var token = BuildToken(user.UserProfileId, user.Email);
+            Response.StatusCode = (int) HttpStatusCode.OK;
+            return new UserLoginTokenModel
+            {
+                UserId = user.UserProfileId.ToString(),
+                Jwt = token
+            };
         }
+
         #endregion
 
         #region Create account with Open Auth
+
         /// <summary>
         /// Create user profile at first time open auth login
         /// </summary>
@@ -160,19 +159,20 @@ namespace YourShares.RestApi.Controllers
             {
                 case "google":
                     await _userProfileService.CreateGoogleProfile(model);
-                    Response.StatusCode = (int) HttpStatusCode.Created;
+                    Response.Redirect($"oauth?auth={auth}&id={model.AccountId}");
                     break;
                 case "facebook":
                     await _userProfileService.CreateFacebookProfile(model);
-                    Response.StatusCode = (int) HttpStatusCode.Created;
+                    Response.Redirect($"oauth?auth={auth}&id={model.AccountId}");
                     break;
                 default:
                     Response.StatusCode = (int) HttpStatusCode.NoContent;
                     break;
             }
         }
+
         #endregion
-        
+
         #region Build Token
 
         private string BuildToken(Guid userId, string email)
@@ -197,6 +197,7 @@ namespace YourShares.RestApi.Controllers
         #endregion
 
         #region Register
+
         /// <summary>
         /// Register a user account in system.
         /// </summary>
@@ -220,6 +221,7 @@ namespace YourShares.RestApi.Controllers
             });
             Response.StatusCode = (int) HttpStatusCode.Created;
         }
+
         #endregion
     }
 }
