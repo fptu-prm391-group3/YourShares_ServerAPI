@@ -24,6 +24,7 @@ namespace YourShares.IoC
             services.AddTransient<ICompanyService, CompanyService>();
             services.AddTransient<IUserAccountService, UserAccountService>();
             services.AddTransient<IUserGoogleAccountService, GoogleAccountService>();
+            services.AddTransient<IFacebookAccountService, FacebookAccountService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IShareholderService, ShareholderService>();
             services.AddTransient<ISharesAccountService, SharesAccountService>();
