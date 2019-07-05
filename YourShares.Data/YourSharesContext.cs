@@ -256,6 +256,8 @@ namespace YourShares.Data
                 entity.Property(e => e.PostRoundShares).HasColumnName("post_round_shares");
 
                 entity.Property(e => e.PreRoundShares).HasColumnName("pre_round_shares");
+
+                entity.Property(e => e.RoundDate).HasColumnName("round_date");
             });
 
             modelBuilder.Entity<RoundInvestor>(entity =>
