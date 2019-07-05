@@ -85,6 +85,7 @@ namespace YourShares.Application.Services
                     Phone = x.Phone,
                     Capital = x.Capital,
                     CompanyId = x.CompanyId,
+                    AdminProfileId = x.AdminProfileId,
                     CompanyName = x.CompanyName,
                     CompanyDescription = x.CompanyDescription,
                     OptionPollAmount = x.OptionPollAmount,
