@@ -53,6 +53,25 @@ namespace YourShares.RestApi.Controllers
         }
         #endregion
 
+        #region Get list admin's company
+        /// <summary>
+        ///     Get list admin's company
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("users")]
+        public async Task<ResponseModel<List<Company>>> GetCompaniesByAdmin()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _companyService.GetCompaniesByAdmin(Guid.Parse(userId));
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<List<Company>>().Success()
+                .Data(result)
+                .Count(result.Count)
+                .build();
+        }
+        #endregion
+
         #region Search
         /// <summary>
         /// Search company by company name.
