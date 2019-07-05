@@ -24,12 +24,11 @@ namespace YourShares.RestApi
         }
 
         public IConfiguration Configuration { get; }
+        private const string _myCorsAllow = "http://yourshares.tk";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-//            services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
-//                .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSwaggerGen(s =>
             {
@@ -54,6 +53,15 @@ namespace YourShares.RestApi
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                     };
                 });
+            services.AddCors(options =>
+            {
+                options.AddPolicy(_myCorsAllow, builder =>
+                {
+                    builder.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowAnyOrigin();
+                });
+            });
             RegisterServices(services);
         }
 
@@ -70,6 +78,8 @@ namespace YourShares.RestApi
                 // app.UseHttpsRedirection();
             }
             app.UseAuthentication();
+            // Use cors must call before use mvc
+            app.UseCors(_myCorsAllow);
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "YourShares API"); });
