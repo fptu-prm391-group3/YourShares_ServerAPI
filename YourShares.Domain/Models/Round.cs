@@ -9,5 +9,6 @@ namespace YourShares.Domain.Models
         public string Name { get; set; }
         public long PreRoundShares { get; set; }
         public long PostRoundShares { get; set; }
+        public long RoundDate { get; set; }
     }
 }

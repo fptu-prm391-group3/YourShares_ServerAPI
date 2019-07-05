@@ -9,7 +9,7 @@ using YourShares.Domain.Models;
 
 namespace YourShares.Application.Services
 {
-    public class RoundService :IRoundService
+    public class RoundService : IRoundService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Round> _roundRepository;
@@ -27,14 +27,15 @@ namespace YourShares.Application.Services
 
         public async Task<List<Round>> GetByCompanyId(Guid id)
         {
-            return _roundRepository.GetManyAsNoTracking(x => x.CompanyId == id)
+            return _roundRepository.GetManyAsNoTracking(x => x.CompanyId == id).OrderBy(x => x.RoundDate)
                 .Select(x => new Round
                 {
                     RoundId = x.RoundId,
                     CompanyId = x.CompanyId,
                     Name = x.Name,
                     PreRoundShares = x.PreRoundShares,
-                    PostRoundShares = x.PostRoundShares
+                    PostRoundShares = x.PostRoundShares,
+                    RoundDate = x.RoundDate
                 }).ToList();
         }
 
@@ -45,7 +46,8 @@ namespace YourShares.Application.Services
                 Name = model.Name,
                 CompanyId = model.CompanyId,
                 PreRoundShares = model.PreRoundShares,
-                PostRoundShares = model.PostRoundShares
+                PostRoundShares = model.PostRoundShares,
+                RoundDate=model.TimestampRound,
             };
             var inserted = _roundRepository.Insert(round).Entity;
             await _unitOfWork.CommitAsync();
