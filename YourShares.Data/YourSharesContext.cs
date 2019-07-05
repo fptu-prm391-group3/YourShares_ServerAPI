@@ -463,6 +463,11 @@ namespace YourShares.Data
                     .HasColumnName("phone")
                     .HasMaxLength(15)
                     .IsUnicode(false);
+                
+                entity.Property(e => e.PhotoUrl)
+                    .HasColumnName("photo_url")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
             });
         }
     }
