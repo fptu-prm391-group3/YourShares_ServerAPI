@@ -91,7 +91,8 @@ namespace YourShares.Application.Services
             {
                 Email = profileModel.Email,
                 FirstName = profileModel.FirstName,
-                LastName = profileModel.LastName
+                LastName = profileModel.LastName,
+                PhotoUrl = profileModel.PhotoUrl
             };
             var inserted = _userProfileRepository.Insert(userProfile).Entity;
             return await _googleAccountService.CreateGoogleAccount(inserted.UserProfileId, profileModel.AccountId);
@@ -108,7 +109,8 @@ namespace YourShares.Application.Services
             {
                 Email = profileModel.Email,
                 FirstName = profileModel.FirstName,
-                LastName = profileModel.LastName
+                LastName = profileModel.LastName,
+                PhotoUrl = profileModel.PhotoUrl
             };
             var inserted = _userProfileRepository.Insert(userProfile).Entity;
             return await _facebookAccountService.CreateFacebookAccount(inserted.UserProfileId, profileModel.AccountId);

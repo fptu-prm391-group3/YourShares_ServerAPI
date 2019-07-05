@@ -256,6 +256,8 @@ namespace YourShares.Data
                 entity.Property(e => e.PostRoundShares).HasColumnName("post_round_shares");
 
                 entity.Property(e => e.PreRoundShares).HasColumnName("pre_round_shares");
+
+                entity.Property(e => e.RoundDate).HasColumnName("round_date");
             });
 
             modelBuilder.Entity<RoundInvestor>(entity =>
@@ -462,6 +464,11 @@ namespace YourShares.Data
                 entity.Property(e => e.Phone)
                     .HasColumnName("phone")
                     .HasMaxLength(15)
+                    .IsUnicode(false);
+                
+                entity.Property(e => e.PhotoUrl)
+                    .HasColumnName("photo_url")
+                    .HasMaxLength(100)
                     .IsUnicode(false);
             });
         }
