@@ -20,18 +20,15 @@ namespace YourShares.Application.Services
         private readonly IRepository<Company> _companyRepository;
         private readonly IRepository<UserProfile> _userRepository;
         private readonly ISharesAccountService _shareAccountService;
-        private readonly IRepository<Shareholder> _shareholderRepository;
 
         public CompanyService(IUnitOfWork unitOfWork
             , IRepository<Company> companyRepository
             , IRepository<UserProfile> userRepository
-            , IRepository<Shareholder> shareholderRepository
             , ISharesAccountService shareAccountService)
         {
             _unitOfWork = unitOfWork;
             _companyRepository = companyRepository;
             _userRepository = userRepository;
-            _shareholderRepository = shareholderRepository;
             _shareAccountService = shareAccountService;
         }
 
@@ -81,8 +78,8 @@ namespace YourShares.Application.Services
             var query = _companyRepository.GetManyAsNoTracking(x =>
                     (ValidateUtils.IsNullOrEmpty(model.CompanyName)
                     || x.CompanyName.ToUpper().Contains(model.CompanyName.ToUpper()))
-                ).Join(_shareholderRepository.GetManyAsNoTracking(x => x.UserProfileId == Guid.Parse(userId))
-                , x => x.CompanyId, y => y.CompanyId, (x, y) => new Company
+                    && x.AdminProfileId == Guid.Parse(userId)
+                ).Select(x => new Company
                 {
                     Address = x.Address,
                     Phone = x.Phone,
@@ -119,6 +116,7 @@ namespace YourShares.Application.Services
         {
             var company = _companyRepository.GetById(model.CompanyId);
             if (company == null) throw new EntityNotFoundException($"Company id {model.CompanyId} not found");
+            
             company.OptionPollAmount += model.SharesAmount;
             company.TotalShares += model.SharesAmount;
 
@@ -127,30 +125,12 @@ namespace YourShares.Application.Services
             return true;
         }
 
-        public async Task AddOptionPoolToShareholder(CompanyAddOptionPoolToShareholderModel model, Guid CompanyId, Guid SharesholerId)
+        public async Task AddOptionPoolToShareholder(CompanyAddOptionPoolToShareholderModel model, Guid CompanyId,Guid SharesholerId)
         {
             var company = _companyRepository.GetById(CompanyId);
             if (company == null) throw new EntityNotFoundException($"Company id {CompanyId} not found");
             company.OptionPollAmount -= model.RestrictedAmount;
-            await _shareAccountService.AddRestrictedShares(SharesholerId, model.RestrictedAmount, model);
-        }
-
-        public async Task<List<Company>> GetCompaniesByAdmin(Guid id)
-        {
-            var result = _companyRepository.GetManyAsNoTracking(x => x.AdminProfileId == id)
-               .Select(x => new Company
-               {
-                   Address = x.Address,
-                   Phone = x.Phone,
-                   Capital = x.Capital,
-                   CompanyId = x.CompanyId,
-                   AdminProfileId = x.AdminProfileId,
-                   CompanyName = x.CompanyName,
-                   CompanyDescription = x.CompanyDescription,
-                   OptionPollAmount = x.OptionPollAmount,
-                   TotalShares = x.TotalShares
-               });
-            return result.ToList();
+            await _shareAccountService.AddRestrictedShares(SharesholerId, model.RestrictedAmount,model);
         }
     }
 }

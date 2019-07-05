@@ -40,8 +40,6 @@ namespace YourShares.Application.Interfaces
         /// <returns></returns>
         Task<Company> GetById(Guid id);
 
-        Task<List<Company>> GetCompaniesByAdmin(Guid id);
-
         /// <summary>
         ///     Delete company by its identifier.
         /// </summary>

@@ -8,6 +8,5 @@ namespace YourShares.Application.ViewModels
         public string Name { get; set; }
         public long PreRoundShares { get; set; }
         public long PostRoundShares { get; set; }
-        public long TimestampRound { get; set; }
     }
 }
