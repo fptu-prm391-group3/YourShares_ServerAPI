@@ -70,7 +70,7 @@ namespace YourShares.Application.Services
             return true;
         }
 
-        public async Task<List<Company>> SearchCompany(string userId, CompanySearchModel model)
+        public async Task<List<CompanyViewSearchModel>> SearchCompany(string userId, CompanySearchModel model)
         {
             if (ValidateUtils.IsNullOrEmpty(userId)) throw new UnauthorizedUser();
             const string defaultSort = "CompanyName ASC";
@@ -82,7 +82,19 @@ namespace YourShares.Application.Services
                     (ValidateUtils.IsNullOrEmpty(model.CompanyName)
                     || x.CompanyName.ToUpper().Contains(model.CompanyName.ToUpper()))
                 ).Join(_shareholderRepository.GetManyAsNoTracking(x => x.UserProfileId == Guid.Parse(userId))
-                , x => x.CompanyId, y => y.CompanyId, (x, y) => new Company
+                , x => x.CompanyId, y => y.CompanyId, (x, y) => new
+                {
+                    x.Address,
+                    x.Phone,
+                    x.Capital,
+                    x.CompanyId,
+                    x.AdminProfileId,
+                    x.CompanyName,
+                    x.CompanyDescription,
+                    x.OptionPollAmount,
+                    x.TotalShares
+                }).Join(_userRepository.GetAll(), 
+                x => x.AdminProfileId, y => y.UserProfileId, (x, y) => new CompanyViewSearchModel
                 {
                     Address = x.Address,
                     Phone = x.Phone,
@@ -92,7 +104,8 @@ namespace YourShares.Application.Services
                     CompanyName = x.CompanyName,
                     CompanyDescription = x.CompanyDescription,
                     OptionPollAmount = x.OptionPollAmount,
-                    TotalShares = x.TotalShares
+                    TotalShares = x.TotalShares,
+                    AdminName= $"{y.FirstName} {y.LastName}"
                 })
                 .OrderBy(sortField);
             var result = query.Skip((model.Page - 1) * model.PageSize)
