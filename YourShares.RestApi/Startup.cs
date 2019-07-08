@@ -75,7 +75,7 @@ namespace YourShares.RestApi
                 // use exception handle middleware
                 app.UseMiddleware(typeof(ExceptionHandleController));
                 app.UseHsts();
-                // app.UseHttpsRedirection();
+                app.UseHttpsRedirection();
             }
             app.UseAuthentication();
             // Use cors must call before use mvc

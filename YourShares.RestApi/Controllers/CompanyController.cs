@@ -78,13 +78,13 @@ namespace YourShares.RestApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ResponseModel<List<Company>>> SearchCompany(
+        public async Task<ResponseModel<List<CompanyViewSearchModel>>> SearchCompany(
             [FromQuery] CompanySearchModel model)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var result = await _companyService.SearchCompany(userId, model);
             Response.StatusCode = (int)HttpStatusCode.OK;
-            return new ResponseBuilder<List<Company>>()
+            return new ResponseBuilder<List<CompanyViewSearchModel>>()
                 .Success()
                 .Data(result)
                 .Count(result.Count)
