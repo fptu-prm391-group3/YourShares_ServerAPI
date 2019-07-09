@@ -80,6 +80,12 @@ namespace YourShares.Data
                     .IsUnicode(false);
 
                 entity.Property(e => e.TotalShares).HasColumnName("total_shares");
+
+                entity.Property(e => e.Categories)
+                    .HasColumnName("categories")
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.PhotoUrl).HasColumnName("photo_url");
             });
 
             modelBuilder.Entity<FacebookAccount>(entity =>
@@ -468,7 +474,7 @@ namespace YourShares.Data
                 
                 entity.Property(e => e.PhotoUrl)
                     .HasColumnName("photo_url")
-                    .HasMaxLength(100)
+                    .HasMaxLength(200)
                     .IsUnicode(false);
             });
         }
