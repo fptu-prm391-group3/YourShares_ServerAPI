@@ -13,5 +13,7 @@ namespace YourShares.Domain.Models
         public long Capital { get; set; }
         public long TotalShares { get; set; }
         public long OptionPollAmount { get; set; }
+        public string Categories { get; set; }
+        public string PhotoUrl { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace YourShares.Application.ViewModels
     {
         public Guid CompanyId { get; set; }
         public Guid AdminProfileId { get; set; }
+        public string AdminName { get; set; }
         public string CompanyName { get; set; }
         public string CompanyDescription { get; set; }
         public string Address { get; set; }
@@ -15,7 +16,8 @@ namespace YourShares.Application.ViewModels
         public long Capital { get; set; }
         public long TotalShares { get; set; }
         public long OptionPollAmount { get; set; }
-
-        public string AdminName { get; set; }
+        
+        public string Categories { get; set; }
+        public string PhotoUrl { get; set; }
     }
 }
