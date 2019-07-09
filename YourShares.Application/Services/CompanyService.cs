@@ -92,7 +92,9 @@ namespace YourShares.Application.Services
                     x.CompanyName,
                     x.CompanyDescription,
                     x.OptionPollAmount,
-                    x.TotalShares
+                    x.TotalShares,
+                    x.Categories,
+                    x.PhotoUrl
                 }).Join(_userRepository.GetAll(), 
                 x => x.AdminProfileId, y => y.UserProfileId, (x, y) => new CompanyViewSearchModel
                 {
@@ -105,7 +107,9 @@ namespace YourShares.Application.Services
                     CompanyDescription = x.CompanyDescription,
                     OptionPollAmount = x.OptionPollAmount,
                     TotalShares = x.TotalShares,
-                    AdminName= $"{y.FirstName} {y.LastName}"
+                    AdminName= $"{y.FirstName} {y.LastName}",
+                    Categories = x.Categories,
+                    PhotoUrl = x.PhotoUrl
                 })
                 .OrderBy(sortField);
             var result = query.Skip((model.Page - 1) * model.PageSize)
