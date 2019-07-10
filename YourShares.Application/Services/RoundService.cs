@@ -33,8 +33,8 @@ namespace YourShares.Application.Services
                     RoundId = x.RoundId,
                     CompanyId = x.CompanyId,
                     Name = x.Name,
-                    PreRoundShares = x.PreRoundShares,
-                    PostRoundShares = x.PostRoundShares,
+                    MoneyRaised = x.MoneyRaised,
+                    ShareIncreased = x.ShareIncreased,
                     RoundDate = x.RoundDate
                 }).ToList();
         }
@@ -45,8 +45,8 @@ namespace YourShares.Application.Services
             {
                 Name = model.Name,
                 CompanyId = model.CompanyId,
-                PreRoundShares = model.PreRoundShares,
-                PostRoundShares = model.PostRoundShares,
+                MoneyRaised = model.PreRoundShares,
+                ShareIncreased = model.PostRoundShares,
                 RoundDate=model.TimestampRound,
             };
             var inserted = _roundRepository.Insert(round).Entity;

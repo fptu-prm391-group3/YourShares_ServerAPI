@@ -10,5 +10,6 @@ namespace YourShares.Domain.Models
         public long ShareAmount { get; set; }
         public long InvestedValue { get; set; }
         public double SharesHoldingPercentage { get; set; }
+        public string PhotoUrl { get; set; }
     }
 }

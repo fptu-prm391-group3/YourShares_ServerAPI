@@ -259,9 +259,9 @@ namespace YourShares.Data
                     .HasColumnName("name")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.PostRoundShares).HasColumnName("post_round_shares");
+                entity.Property(e => e.ShareIncreased).HasColumnName("share_increased");
 
-                entity.Property(e => e.PreRoundShares).HasColumnName("pre_round_shares");
+                entity.Property(e => e.MoneyRaised).HasColumnName("money_raised");
 
                 entity.Property(e => e.RoundDate).HasColumnName("round_date");
             });
@@ -280,6 +280,11 @@ namespace YourShares.Data
                     .IsRequired()
                     .HasColumnName("investor_name")
                     .HasMaxLength(100);
+                
+                entity.Property(e => e.PhotoUrl)
+                    .IsRequired()
+                    .HasColumnName("photo_url")
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.RoundId).HasColumnName("round_id");
 
