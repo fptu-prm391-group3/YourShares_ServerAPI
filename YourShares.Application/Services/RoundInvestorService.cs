@@ -35,7 +35,8 @@ namespace YourShares.Application.Services
                     InvestorName = x.InvestorName,
                     InvestedValue = x.InvestedValue,
                     ShareAmount = x.ShareAmount,
-                    SharesHoldingPercentage = x.SharesHoldingPercentage
+                    SharesHoldingPercentage = x.SharesHoldingPercentage,
+                    PhotoUrl = x.PhotoUrl
                 }).ToList();
         }
 
@@ -47,7 +48,8 @@ namespace YourShares.Application.Services
                 InvestorName = model.InvestorName,
                 InvestedValue = model.InvestedValue,
                 ShareAmount = model.ShareAmount,
-                SharesHoldingPercentage = model.SharesHoldingPercentage
+                SharesHoldingPercentage = model.SharesHoldingPercentage,
+                PhotoUrl = model.PhotoUrl
             };
             var inserted = _roundInvestorRepository.Insert(roundInvestor).Entity;
             await _unitOfWork.CommitAsync();
