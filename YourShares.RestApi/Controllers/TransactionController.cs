@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
+using YourShares.Application.ViewModels;
 using YourShares.Domain.Models;
 using YourShares.RestApi.ApiResponse;
 
@@ -62,6 +63,22 @@ namespace YourShares.RestApi.Controllers
             return new ResponseBuilder<List<Transaction>>().Success()
                 .Data(result)
                 .Count(result.Count)
+                .build();
+        }
+
+        /// <summary>
+        /// Request Transaction with another User.
+        /// </summary>
+        /// <param name="model">The.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ResponseModel<bool>> RequestTransaction([FromBody] TransactionRequestModel model)
+        {
+            var result = await _transactionService.RequestTransaction(model);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<bool>().Success()
+                .Data(result)
+                .Count(1)
                 .build();
         }
     }
