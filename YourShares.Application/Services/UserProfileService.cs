@@ -68,7 +68,7 @@ namespace YourShares.Application.Services
             if (!ValidateUtils.IsPhone(profileModel.Phone)) throw new FormatException("Phone number invalid");
 
             var query = _userProfileRepository.GetManyAsNoTracking(x => x.Email.Equals(profileModel.Email));
-            if (query.ToList().Count != 0) throw new FormatException("Email Exited");
+            if (query.ToList().Count != 0) throw new FormatException("EmailL Existed");
             var userProfile = _userProfileRepository.Insert(new UserProfile
             {
                 Email = profileModel.Email,

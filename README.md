@@ -34,8 +34,7 @@ Read more about this project at [here](https://sites.google.com/fpt.edu.vn/yours
 * Domain Driven Design
 * SQLServer RDBMS
 * Restful Web Api with ASP.NET Core
-* Mobile application with reactjs [here](https://github.com/phancongbinh1998/YourShares)
-* Web administrator
+* Mobile application with react-native and Expo SDK [here](https://github.com/fptu-se1269-group3/YourShares_MobileApplication)
 
 ### Installation
 
@@ -43,7 +42,7 @@ To clone and run this application, you will need [Git](https://git-scm.com) and 
 
 ```shell=
 # Clone this repository
-git clone https://github.com/minhtus/YourShares_ServerAPI.git
+git clone https://github.com/fptu-se1269-group3/YourShares_ServerAPI.git
 
 # Install dependencies and run application
 dotnet run --project YourShares.RestApi
