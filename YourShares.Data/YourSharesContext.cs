@@ -362,6 +362,10 @@ namespace YourShares.Data
                     .HasColumnName("transaction_status_code")
                     .HasMaxLength(10)
                     .IsUnicode(false);
+                entity.Property(e => e.Message)
+                    .IsRequired()
+                    .HasColumnName("transaction_message")
+                    .HasMaxLength(150);
 
                 entity.Property(e => e.TransactionTypeCode)
                     .IsRequired()
