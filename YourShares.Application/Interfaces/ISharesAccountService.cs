@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using YourShares.Application.ViewModels;
+using YourShares.Domain.Models;
 
 namespace YourShares.Application.Interfaces
 {
@@ -17,5 +17,11 @@ namespace YourShares.Application.Interfaces
         Task<SharesAccountDetailModel> GetById(Guid id);
 
         Task<List<SharesAccountDetailModel>> GetByShareholderId(Guid id);
+
+        Task DeleteShareAccount(Guid id);
+
+        Task<ShareAccount> UpdateShareAccount(SharesAccountEditModel model);
+
+        Task<ShareAccount> CreateSharesAccount(SharesAccountCreateModel model);
     }
 }

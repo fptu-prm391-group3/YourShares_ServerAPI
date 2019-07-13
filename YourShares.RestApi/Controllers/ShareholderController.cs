@@ -1,10 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
 using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
@@ -31,7 +31,7 @@ namespace YourShares.RestApi.Controllers
             _shareholderService = shareholderService;
         }
         #endregion
-        
+
         #region GetById
         /// <summary>
         /// Find shareholder specified by its id
@@ -95,7 +95,7 @@ namespace YourShares.RestApi.Controllers
             [FromQuery] ShareholderSearchModel model)
         {
             var result = await _shareholderService.SearchShareholder(model);
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
             return new ResponseBuilder<List<ShareholderSearchViewModel>>().Success()
                 .Data(result)
                 .Count(result.Count)
@@ -116,6 +116,38 @@ namespace YourShares.RestApi.Controllers
             return await _shareholderService.AddUserAsShareHolder(model, userId);
         }
         #endregion
-        
+
+        #region Delete
+        /// <summary>
+        ///     Delete a Shares holder specified by its identifier.
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task DeleteSharesAccount([FromRoute] Guid id)
+        {
+            await _shareholderService.DeleteShareholder(id);
+            Response.StatusCode = (int)HttpStatusCode.NoContent;
+        }
+        #endregion
+
+        #region Update
+        /// <summary>
+        ///     Updates the shares Holder with details in the request body.
+        /// </summary>
+        /// <param name="model">The UserEditInfoModel.</param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<ResponseModel<Shareholder>> UpdateInfo([FromBody] ShareHolderUpdateModel model)
+        {
+            var result = await _shareholderService.UpdateSharesHolder(model);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<Shareholder>()
+                .Success()
+                .Data(result)
+                .build();
+        }
+        #endregion
     }
 }

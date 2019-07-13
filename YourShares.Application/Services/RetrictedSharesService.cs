@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using YourShares.Application.Interfaces;
 using YourShares.Data.Interfaces;
@@ -13,12 +11,28 @@ namespace YourShares.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<RestrictedShare> _restrictedShareRepository;
 
+        #region Contructor        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RetrictedSharesService"/> class.
+        /// </summary>
+        /// <param name="unitOfWork">The unit of work.</param>
+        /// <param name="restrictedShareRepository">The restricted share repository.</param>
         public RetrictedSharesService(IUnitOfWork unitOfWork
             , IRepository<RestrictedShare> restrictedShareRepository)
         {
             _unitOfWork = unitOfWork;
             _restrictedShareRepository = restrictedShareRepository;
         }
+        #endregion
+
+        #region Add Retricted Shares        
+        /// <summary>
+        /// Adds the retricted shares.
+        /// </summary>
+        /// <param name="ConvertibleRatio">The convertible ratio.</param>
+        /// <param name="ConvertibleTime">The convertible time.</param>
+        /// <param name="ShareAccountId">The share account identifier.</param>
+        /// <returns></returns>
         public async Task AddRetrictedShares(float ConvertibleRatio, long ConvertibleTime, Guid ShareAccountId)
         {
             var query = _restrictedShareRepository.GetById(ShareAccountId);
@@ -40,5 +54,6 @@ namespace YourShares.Application.Services
             
             await _unitOfWork.CommitAsync();
         }
+        #endregion
     }
 }

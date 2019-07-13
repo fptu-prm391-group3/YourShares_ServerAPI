@@ -1,9 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
 using YourShares.Application.ViewModels;
 using YourShares.Domain.Models;
@@ -78,8 +78,39 @@ namespace YourShares.RestApi.Controllers
         public async Task<RoundInvestor> CreateRoundInvestor(RoundInvestorCreateModel model)
         {
             var result = await _roundInvestorService.InsertRoundInvestor(model);
-            Response.StatusCode = (int) HttpStatusCode.Created;
+            Response.StatusCode = (int)HttpStatusCode.Created;
             return result;
+        }
+        #endregion
+
+        #region Update
+
+        /// <summary>
+        ///     Updates the RoundInvester with details in the request body.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        [Route("{id}")]
+        [HttpPut]
+        public async Task<RoundInvestor> UpdateRoundInvester([FromRoute] Guid id, [FromBody] RoundInvesterUpdateModel model)
+        {
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return await _roundInvestorService.UpdateRoundInvestor(id, model);
+        }
+        #endregion
+
+        #region Delete
+        /// <summary>
+        ///     Delete an Round Investor specified by its identifier.
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task DeleteRoundById([FromRoute] Guid id)
+        {
+            await _roundInvestorService.DeleteRoundInvestor(id);
+            Response.StatusCode = (int)HttpStatusCode.NoContent;
         }
         #endregion
     }

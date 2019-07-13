@@ -13,5 +13,9 @@ namespace YourShares.Application.Interfaces
         Task<List<Round>> GetByCompanyId(Guid id);
 
         Task<Round> InsertRound(RoundCreateModel model);
+
+        Task<Round> UpdateRound(Guid id, RoundUpdateModel model);
+
+        Task DeleteRound(Guid id);
     }
 }

@@ -9,7 +9,6 @@ namespace YourShares.Application.Interfaces
 {
     public interface IUserProfileService
     {
-
         Task<UserProfile> UpdateLastName(Guid id, string lastName);
 
         Task<UserProfile> UpdateFirstName(Guid id, string firstName);
@@ -33,5 +32,7 @@ namespace YourShares.Application.Interfaces
         Task<bool> CreateGoogleProfile(OAuthCreateModel profileModel);
 
         Task<bool> CreateFacebookProfile(OAuthCreateModel profileModel);
+
+        Task DeleteUser(Guid Id);
     }
 }
