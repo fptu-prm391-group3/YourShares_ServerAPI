@@ -19,6 +19,17 @@ namespace YourShares.Application.Services
         private readonly IRepository<UserProfile> _userProfileRepository;
         private readonly IRetrictedSharesService _restrictedShareService;
 
+        #region Contructor        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SharesAccountService"/> class.
+        /// </summary>
+        /// <param name="unitOfWork">The unit of work.</param>
+        /// <param name="shareAccountRepository">The share account repository.</param>
+        /// <param name="shareholderRepository">The shareholder repository.</param>
+        /// <param name="restrictedShareRepository">The restricted share repository.</param>
+        /// <param name="companyRepository">The company repository.</param>
+        /// <param name="userProfileRepository">The user profile repository.</param>
+        /// <param name="restrictedShareService">The restricted share service.</param>
         public SharesAccountService(IUnitOfWork unitOfWork
             , IRepository<ShareAccount> shareAccountRepository
             , IRepository<Shareholder> shareholderRepository
@@ -36,7 +47,16 @@ namespace YourShares.Application.Services
             _companyRepository = companyRepository;
             _userProfileRepository = userProfileRepository;
         }
+        #endregion
 
+        #region Add Restricted Shares        
+        /// <summary>
+        /// Adds the restricted shares.
+        /// </summary>
+        /// <param name="shareholderId">The shareholder identifier.</param>
+        /// <param name="restricted">The restricted.</param>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         public async Task AddRestrictedShares(Guid shareholderId, long restricted,
             CompanyAddOptionPoolToShareholderModel model)
         {
@@ -63,7 +83,50 @@ namespace YourShares.Application.Services
             }
             await _restrictedShareService.AddRetrictedShares(model.ConvertibleRatio, model.ConvertibleTime, shareAccountId);
         }
+        #endregion
 
+        #region Create        
+        /// <summary>
+        /// Creates the shares account.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        public async Task<ShareAccount> CreateSharesAccount(SharesAccountCreateModel model)
+        {
+            var sharesAccount = new ShareAccount
+            {
+                ShareAmount = model.ShareAmount,
+                ShareholderId = model.ShareholderId,
+                ShareTypeCode = model.ShareTypeCode
+            };
+            var result= _shareAccountRepository.Insert(sharesAccount).Entity;
+            await _unitOfWork.CommitAsync();
+            return result;
+        }
+        #endregion
+
+        #region Delete        
+        /// <summary>
+        /// Deletes the share account.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">SharesAccount not found</exception>
+        public async Task DeleteShareAccount(Guid id)
+        {
+            var query = _shareAccountRepository.GetById(id);
+            if (query == null) throw new Exception("SharesAccount not found");
+            _shareAccountRepository.Delete(query);
+            await _unitOfWork.CommitAsync();
+        }
+        #endregion
+
+        #region Get By Id        
+        /// <summary>
+        /// Gets the by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public async Task<SharesAccountDetailModel> GetById(Guid id)
         {
             var query = _shareAccountRepository.GetById(id);
@@ -75,7 +138,14 @@ namespace YourShares.Application.Services
                 ShareholderId = query.ShareholderId
             };
         }
+        #endregion
 
+        #region Get By Shareholder Id        
+        /// <summary>
+        /// Gets the by shareholder identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public async Task<List<SharesAccountDetailModel>> GetByShareholderId(Guid id)
         {
             var result = _shareAccountRepository.GetManyAsNoTracking(x => x.ShareholderId == id)
@@ -87,7 +157,33 @@ namespace YourShares.Application.Services
                 }).ToList();
             return result;
         }
+        #endregion
 
+        #region Update        
+        /// <summary>
+        /// Updates the share account.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">SharesAccount not found</exception>
+        public async Task<ShareAccount> UpdateShareAccount(SharesAccountEditModel model)
+        {
+            var query = _shareAccountRepository.GetById(model.Id);
+            if (query == null) throw new Exception("SharesAccount not found");
+            query.ShareAmount = model.ShareAmount;
+            query.ShareTypeCode = model.ShareTypeCode;
+            _shareAccountRepository.Update(query);
+            await _unitOfWork.CommitAsync();
+            return query;
+        }
+        #endregion
+
+        #region View all        
+        /// <summary>
+        /// Views all shares account of company.
+        /// </summary>
+        /// <param name="companyId">The company identifier.</param>
+        /// <returns></returns>
         public async Task<List<ShareAccountViewAllModel>> ViewAllSharesAccountOfCompany(Guid companyId)
         {
             var query = _shareholderRepository.GetManyAsNoTracking(x => x.CompanyId == companyId)
@@ -111,7 +207,14 @@ namespace YourShares.Application.Services
             var result = await Task.WhenAll(query);
             return result.ToList();
         }
+        #endregion
 
+        #region View        
+        /// <summary>
+        /// Views the shares account of user in company.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         public async Task<List<SharesAccountViewModel>> ViewSharesAccountOfUserInCompany(ShareAccountGetDetailModel model)
         {
             var totalShares = (float)_companyRepository.GetById(model.CompanyId).TotalShares;
@@ -143,5 +246,6 @@ namespace YourShares.Application.Services
 
             return result;
         }
+        #endregion
     }
 }

@@ -51,6 +51,6 @@ namespace YourShares.Application.Interfaces
 
         Task<bool> IncreaseOptionPool(CompanyIncreaseOptionPoolMode model);
 
-        Task AddOptionPoolToShareholder(CompanyAddOptionPoolToShareholderModel model,Guid companyId,Guid shareholderId);
+        Task AddOptionPoolToShareholder(CompanyAddOptionPoolToShareholderModel model, Guid companyId, Guid shareholderId);
     }
 }

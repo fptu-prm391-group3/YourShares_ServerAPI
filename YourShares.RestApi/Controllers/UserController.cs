@@ -1,20 +1,15 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
 using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
-using YourShares.RestApi.ApiResponse;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using YourShares.Domain.Util;
 using YourShares.Domain.Models;
+using YourShares.RestApi.ApiResponse;
 
 namespace YourShares.RestApi.Controllers
 {
@@ -141,6 +136,18 @@ namespace YourShares.RestApi.Controllers
         }
         #endregion
 
-
+        #region Delete
+        /// <summary>
+        ///     Delete a User specified by its identifier.
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task DeleteRoundById([FromRoute] Guid id)
+        {
+            await _userProfileService.DeleteUser(id);
+            Response.StatusCode = (int)HttpStatusCode.NoContent;
+        }
+        #endregion
     }
 }

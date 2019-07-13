@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using YourShares.Application.Exceptions;
 using YourShares.Application.Interfaces;
@@ -10,8 +11,6 @@ using YourShares.Application.ViewModels;
 using YourShares.Data.Interfaces;
 using YourShares.Domain.Models;
 using YourShares.Domain.Util;
-using System.Linq.Dynamic.Core;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace YourShares.Application.Services
 {
@@ -22,6 +21,14 @@ namespace YourShares.Application.Services
         private readonly IRepository<Company> _companyRepository;
         private readonly IRepository<UserProfile> _userProfileRepository;
 
+        #region Contructor        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShareholderService"/> class.
+        /// </summary>
+        /// <param name="unitOfWork">The unit of work.</param>
+        /// <param name="shareholderRepository">The shareholder repository.</param>
+        /// <param name="companyRepository">The company repository.</param>
+        /// <param name="userProfileRepository">The user profile repository.</param>
         public ShareholderService(IUnitOfWork unitOfWork, IRepository<Shareholder> shareholderRepository,
                                  IRepository<Company> companyRepository, IRepository<UserProfile> userProfileRepository)
         {
@@ -30,12 +37,22 @@ namespace YourShares.Application.Services
             _companyRepository = companyRepository;
             _userProfileRepository = userProfileRepository;
         }
+        #endregion
 
+        #region Add User As ShareHolder        
+        /// <summary>
+        /// Adds the user as share holder.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <param name="currentUserId">The current user identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="FormatException">Invalid shareholder type</exception>
+        /// <exception cref="EntityNotFoundException">Company {model.CompanyId} not found</exception>
         public async Task<Shareholder> AddUserAsShareHolder(ShareHolderAddUserModel model, string currentUserId)
         {
             var id = Guid.Parse(currentUserId);
-            if (!new List<string> {RefShareholderTypeCode.Founders, 
-                RefShareholderTypeCode.Shareholders, 
+            if (!new List<string> {RefShareholderTypeCode.Founders,
+                RefShareholderTypeCode.Shareholders,
                 RefShareholderTypeCode.Employees}
                 .Contains(model.ShareholderType))
             {
@@ -53,7 +70,30 @@ namespace YourShares.Application.Services
             await _unitOfWork.CommitAsync();
             return inserted;
         }
+        #endregion
 
+        #region Delete        
+        /// <summary>
+        /// Deletes the shareholder.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="EntityNotFoundException">shareholder id {id} not found</exception>
+        public async Task DeleteShareholder(Guid id)
+        {
+            var result = _shareholderRepository.GetById(id);
+            if (result == null) throw new EntityNotFoundException($"shareholder id {id} not found");
+            _shareholderRepository.Delete(result);
+            await _unitOfWork.CommitAsync();
+        }
+        #endregion
+
+        #region Get By CompanyId        
+        /// <summary>
+        /// Gets the by company identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public async Task<List<ShareholderDetailModel>> GetByCompanyId(Guid id)
         {
             var result = _shareholderRepository.GetManyAsNoTracking(x => x.CompanyId == id)
@@ -66,7 +106,15 @@ namespace YourShares.Application.Services
                         }).ToList();
             return result;
         }
+        #endregion
 
+        #region Get By Id        
+        /// <summary>
+        /// Gets the by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="EntityNotFoundException">shareholder id {id} not found</exception>
         public async Task<ShareholderSearchViewModel> GetById(Guid id)
         {
             var result = _shareholderRepository.GetById(id);
@@ -83,7 +131,14 @@ namespace YourShares.Application.Services
                 }).FirstOrDefault();
             return query;
         }
+        #endregion
 
+        #region Get By UserId        
+        /// <summary>
+        /// Gets the by user identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public async Task<List<ShareholderDetailModel>> GetByUserId(Guid id)
         {
             var result = _shareholderRepository.GetManyAsNoTracking(x => x.UserProfileId == id)
@@ -96,7 +151,14 @@ namespace YourShares.Application.Services
                         }).ToList();
             return result;
         }
+        #endregion
 
+        #region Search        
+        /// <summary>
+        /// Searches the shareholder.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         public async Task<List<ShareholderSearchViewModel>> SearchShareholder(ShareholderSearchModel model)
         {
             const string defaultSort = "Name ASC";
@@ -125,5 +187,24 @@ namespace YourShares.Application.Services
                 .Take(model.PageSize);
             return result.ToList();
         }
+        #endregion
+
+        #region Update        
+        /// <summary>
+        /// Updates the shares holder.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        /// <exception cref="EntityNotFoundException">shareholder id {model.Id} not found</exception>
+        public async Task<Shareholder> UpdateSharesHolder(ShareHolderUpdateModel model)
+        {
+            var result = _shareholderRepository.GetById(model.Id);
+            if (result == null) throw new EntityNotFoundException($"shareholder id {model.Id} not found");
+            result.ShareholderTypeCode = model.ShareholderTypeCode;
+            _shareholderRepository.Update(result);
+            await _unitOfWork.CommitAsync();
+            return result;
+        }
+        #endregion
     }
 }

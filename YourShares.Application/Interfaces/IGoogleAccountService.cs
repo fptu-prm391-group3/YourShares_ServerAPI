@@ -9,6 +9,7 @@ namespace YourShares.Application.Interfaces
         Task<GoogleAccount> GetById(Guid id);
 
         Task<GoogleAccount> GetByGoogleId(string id);
+
         Task<bool> CreateGoogleAccount(Guid userProfileId, string googleAccountId);
     }
 }
