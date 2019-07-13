@@ -1,9 +1,9 @@
-using System;
-using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 using YourShares.Application.Exceptions;
 using YourShares.RestApi.ApiResponse;
 
@@ -39,7 +39,7 @@ namespace YourShares.RestApi.Controllers
                 case EntityNotFoundException _:
                     httpStatus = HttpStatusCode.NotFound;
                     break;
-                case FormatException _ :
+                case FormatException _:
                     httpStatus = HttpStatusCode.BadRequest;
                     errorMessage = ex.Message;
                     break;
@@ -58,7 +58,7 @@ namespace YourShares.RestApi.Controllers
             }
 
             var response = new ResponseBuilder<dynamic>().Fail(httpStatus, errorMessage).build();
-            context.Response.StatusCode = (int) httpStatus;
+            context.Response.StatusCode = (int)httpStatus;
             return context.Response.WriteAsync(JsonConvert.SerializeObject(response));
         }
     }

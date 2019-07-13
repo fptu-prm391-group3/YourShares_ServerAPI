@@ -1,9 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
 using YourShares.Application.ViewModels;
 using YourShares.Domain.Models;
@@ -15,7 +15,7 @@ namespace YourShares.RestApi.Controllers
     [Route("api/transactions")]
     [Produces("application/json")]
     [Authorize]
-    public class TransactionController: ControllerBase
+    public class TransactionController : ControllerBase
     {
         private readonly ITransactionService _transactionService;
 
@@ -48,7 +48,7 @@ namespace YourShares.RestApi.Controllers
         }
         #endregion
 
-
+        #region Gets the list transaction by shares account id.
         /// <summary>
         /// Gets the list transaction by shares account id.
         /// </summary>
@@ -65,7 +65,9 @@ namespace YourShares.RestApi.Controllers
                 .Count(result.Count)
                 .build();
         }
+        #endregion
 
+        #region Request Transaction with another User.
         /// <summary>
         /// Request Transaction with another User.
         /// </summary>
@@ -81,5 +83,26 @@ namespace YourShares.RestApi.Controllers
                 .Count(1)
                 .build();
         }
+        #endregion
+
+        #region Handeling Transaction.
+        /// <summary>
+        /// Handeling Transaction.
+        /// </summary>
+        /// <param name="model">The.</param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<ResponseModel<bool>> HandelingTransaction([FromRoute] Guid id, [FromBody] TransactionHandelingModel model)
+        {
+            var result = await _transactionService.HandelingTransaction(id, model);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<bool>().Success()
+                .Data(result)
+                .Count(1)
+                .build();
+        }
+        #endregion
+
     }
 }

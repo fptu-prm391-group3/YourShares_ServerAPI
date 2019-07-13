@@ -1,13 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
 using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
@@ -34,7 +31,7 @@ namespace YourShares.RestApi.Controllers
             _companyService = companyService;
         }
         #endregion
-        
+
         #region GetById
         /// <summary>
         ///     Gets company specified by its identifier.
@@ -127,7 +124,7 @@ namespace YourShares.RestApi.Controllers
             Response.StatusCode = (int)HttpStatusCode.OK;
         }
         #endregion
-        
+
         #region Delete
 
         /// <summary>
@@ -157,7 +154,7 @@ namespace YourShares.RestApi.Controllers
             , [FromRoute] Guid companyId
             , [FromRoute] Guid shareholderId)
         {
-            await _companyService.AddOptionPoolToShareholder(model,companyId,shareholderId);
+            await _companyService.AddOptionPoolToShareholder(model, companyId, shareholderId);
             Response.StatusCode = (int)HttpStatusCode.OK;
         }
         #endregion

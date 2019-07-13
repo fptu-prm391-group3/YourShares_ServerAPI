@@ -1,3 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -5,13 +10,6 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using YourShares.Application.Exceptions;
 using YourShares.Application.Interfaces;
 using YourShares.Application.ViewModels;
 using YourShares.Domain.Models;
@@ -61,7 +59,7 @@ namespace YourShares.RestApi.Controllers
         {
             if (!Request.Headers.ContainsKey("Authorization"))
             {
-                Response.StatusCode = (int) HttpStatusCode.BadRequest;
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return null;
             }
 
@@ -75,11 +73,11 @@ namespace YourShares.RestApi.Controllers
             var user = await _userProfileService.GetUserByEmail(email);
             if (HashingUtils.HashString(password + user.PasswordSalt, user.PasswordHashAlgorithm) != user.PasswordHash)
             {
-                Response.StatusCode = (int) HttpStatusCode.NotFound;
+                Response.StatusCode = (int)HttpStatusCode.NotFound;
                 return null;
             }
 
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
             var token = BuildToken(user.UserProfileId, user.Email);
             return new UserLoginTokenModel
             {
@@ -109,31 +107,31 @@ namespace YourShares.RestApi.Controllers
                     var googleAccount = await _googleAccountService.GetByGoogleId(id);
                     if (googleAccount == null)
                     {
-                        Response.StatusCode = (int) HttpStatusCode.Accepted;
+                        Response.StatusCode = (int)HttpStatusCode.Accepted;
                         return null;
                     }
 
-                    Response.StatusCode = (int) HttpStatusCode.OK;
+                    Response.StatusCode = (int)HttpStatusCode.OK;
                     user = await _userProfileService.GetById(googleAccount.UserProfileId);
                     break;
                 case "facebook":
                     var facebookAccount = await _facebookAccountService.GetByFacebookId(id);
                     if (facebookAccount == null)
                     {
-                        Response.StatusCode = (int) HttpStatusCode.Accepted;
+                        Response.StatusCode = (int)HttpStatusCode.Accepted;
                         return null;
                     }
 
-                    Response.StatusCode = (int) HttpStatusCode.OK;
+                    Response.StatusCode = (int)HttpStatusCode.OK;
                     user = await _userProfileService.GetById(facebookAccount.UserProfileId);
                     break;
                 default:
-                    Response.StatusCode = (int) HttpStatusCode.NoContent;
+                    Response.StatusCode = (int)HttpStatusCode.NoContent;
                     return null;
             }
 
             var token = BuildToken(user.UserProfileId, user.Email);
-            Response.StatusCode = (int) HttpStatusCode.OK;
+            Response.StatusCode = (int)HttpStatusCode.OK;
             return new UserLoginTokenModel
             {
                 UserId = user.UserProfileId.ToString(),
@@ -166,7 +164,7 @@ namespace YourShares.RestApi.Controllers
                     Response.Redirect($"oauth?auth={auth}&id={model.AccountId}");
                     break;
                 default:
-                    Response.StatusCode = (int) HttpStatusCode.NoContent;
+                    Response.StatusCode = (int)HttpStatusCode.NoContent;
                     break;
             }
         }
@@ -219,7 +217,7 @@ namespace YourShares.RestApi.Controllers
                 Email = model.Email,
                 Password = model.Password
             });
-            Response.StatusCode = (int) HttpStatusCode.Created;
+            Response.StatusCode = (int)HttpStatusCode.Created;
         }
 
         #endregion

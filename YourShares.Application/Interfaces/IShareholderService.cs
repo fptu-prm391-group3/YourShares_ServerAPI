@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using YourShares.Application.SearchModels;
 using YourShares.Application.ViewModels;
-using YourShares.Data.Interfaces;
 using YourShares.Domain.Models;
 
 namespace YourShares.Application.Interfaces
@@ -21,5 +18,10 @@ namespace YourShares.Application.Interfaces
         Task<List<ShareholderDetailModel>> GetByCompanyId(Guid id);
 
         Task<List<ShareholderDetailModel>> GetByUserId(Guid id);
+
+        Task DeleteShareholder(Guid id);
+
+        Task<Shareholder> UpdateSharesHolder(ShareHolderUpdateModel model);
+
     }
 }

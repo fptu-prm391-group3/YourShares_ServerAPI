@@ -1,11 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using YourShares.Application.Interfaces;
 using YourShares.Application.ViewModels;
+using YourShares.Domain.Models;
 using YourShares.RestApi.ApiResponse;
 
 namespace YourShares.RestApi.Controllers
@@ -82,7 +83,7 @@ namespace YourShares.RestApi.Controllers
                 .build();
         }
         #endregion
-        
+
         #region View all shares account of company (*)
         /// <summary>
         /// Views all shares account in a company
@@ -101,6 +102,56 @@ namespace YourShares.RestApi.Controllers
                 .build();
         }
         #endregion
-        
+
+        #region Delete
+        /// <summary>
+        ///     Delete a Shares Account specified by its identifier.
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task DeleteSharesAccount([FromRoute] Guid id)
+        {
+            await _sharesAccountService.DeleteShareAccount(id);
+            Response.StatusCode = (int)HttpStatusCode.NoContent;
+        }
+        #endregion
+
+        #region Update
+        /// <summary>
+        ///     Updates the shares Account with details in the request body.
+        /// </summary>
+        /// <param name="model">The UserEditInfoModel.</param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<ResponseModel<ShareAccount>> UpdateInfo([FromBody] SharesAccountEditModel model)
+        {
+            var result = await _sharesAccountService.UpdateShareAccount(model);
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ResponseBuilder<ShareAccount>()
+                .Success()
+                .Data(result)
+                .build();
+        }
+        #endregion
+
+        #region Create
+        /// <summary>
+        ///     Creates the company.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ResponseModel<ShareAccount>> CreateCompany([FromBody] SharesAccountCreateModel model)
+        {
+            var result = await _sharesAccountService.CreateSharesAccount(model);
+            Response.StatusCode = (int)HttpStatusCode.Created;
+            return new ResponseBuilder<ShareAccount>()
+                .Success()
+                .Data(result)
+                .build();
+        }
+        #endregion
     }
 }
