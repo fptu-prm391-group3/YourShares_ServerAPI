@@ -148,6 +148,7 @@ namespace YourShares.Application.Services
                 TransactionTypeCode = "IN",
                 TransactionValue = model.Value,
                 TransactionStatusCode = "RQ",
+                Message = model.Message,
                 TransactionDate = DateTimeOffset.Now.ToUnixTimeSeconds()
             });
 
@@ -158,6 +159,7 @@ namespace YourShares.Application.Services
                 TransactionTypeCode = "OUT",
                 TransactionValue = model.Value,
                 TransactionStatusCode = "RQ",
+                Message = model.Message,
                 TransactionDate = DateTimeOffset.Now.ToUnixTimeSeconds()
             });
 
