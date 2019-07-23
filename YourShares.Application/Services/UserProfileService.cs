@@ -102,16 +102,15 @@ namespace YourShares.Application.Services
         /// or
         /// Phone number invalid
         /// or
-        /// EmailL Existed
+        /// Email existed
         /// </exception>
         public async Task<bool> CreateUserProfile(UserRegisterModel profileModel
             , UserAccountCreateModel accountModel)
         {
             if (!ValidateUtils.IsMail(profileModel.Email)) throw new FormatException("Email address invalid");
-            if (!ValidateUtils.IsPhone(profileModel.Phone)) throw new FormatException("Phone number invalid");
 
             var query = _userProfileRepository.GetManyAsNoTracking(x => x.Email.Equals(profileModel.Email));
-            if (query.ToList().Count != 0) throw new FormatException("EmailL Existed");
+            if (query.ToList().Count != 0) throw new FormatException("Email existed");
             var userProfile = _userProfileRepository.Insert(new UserProfile
             {
                 Email = profileModel.Email,
